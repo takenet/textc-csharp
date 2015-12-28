@@ -2,10 +2,10 @@
 
 namespace Takenet.Text.Templates
 {
-    [TokenTemplate(ShortName = "WordRegex")]
-    public class WordRegexTokenTemplate : RegexTokenTemplateBase<string>
+    [TokenTemplate(ShortName = "RegexWord")]
+    public class RegexWordTokenTemplate : RegexTokenTemplateBase<string>
     {
-        public WordRegexTokenTemplate(string name, bool isContextual, bool isOptional, bool invertParsing)
+        public RegexWordTokenTemplate(string name, bool isContextual, bool isOptional, bool invertParsing)
             : base(name, isContextual, isOptional, invertParsing)
         {
         }

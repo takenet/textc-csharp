@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
+  <metadata>
+    <id>Takenet.Text</id>
+    <version>0.1.0</version>
+    <title>Text</title>
+    <authors>takenet</authors>
+    <owners>takenet,andrebires</owners>
+    <projectUrl>http://github.com/takenet/text-csharp</projectUrl>
+    <licenseUrl>https://raw.githubusercontent.com/takenet/text-csharp/master/LICENSE</licenseUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>Text command parsing library</description>
+    <copyright>Copyright © 2015 Curupira S/A</copyright>
+    <tags>text,natural language</tags>
+  </metadata>
+  <files>
+    <file src="bin\Release\Takenet.Text.dll" target="lib\net451\Takenet.Text.dll" />
+    <file src="bin\Release\Takenet.Text.XML" target="lib\net451\Takenet.Text.XML" />
+  </files>
+</package>

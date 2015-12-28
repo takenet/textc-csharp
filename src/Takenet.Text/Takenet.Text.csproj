@@ -28,6 +28,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <DocumentationFile>bin\Release\Takenet.Text.XML</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Newtonsoft.Json, Version=7.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
@@ -83,7 +84,6 @@
     <Compile Include="Syntax.cs" />
     <Compile Include="SyntaxParser.cs" />
     <Compile Include="Templates\DecimalTokenTemplate.cs" />
-    <Compile Include="Templates\GuidTokenTemplate.cs" />
     <Compile Include="Templates\IntegerTokenTemplate.cs" />
     <Compile Include="Templates\ITokenTemplate.cs" />
     <Compile Include="Templates\LevenshteinDistanceWordTokenTemplate.cs" />
@@ -94,7 +94,7 @@
     <Compile Include="Templates\TextTokenTemplate.cs" />
     <Compile Include="Templates\TokenTemplate.cs" />
     <Compile Include="Templates\ValueTokenTemplateBase.cs" />
-    <Compile Include="Templates\WordRegexTokenTemplate.cs" />
+    <Compile Include="Templates\RegexWordTokenTemplate.cs" />
     <Compile Include="Templates\WordTokenTemplate.cs" />
     <Compile Include="TextCursor.cs" />
     <Compile Include="TextProcessor.cs" />
@@ -102,6 +102,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+    <None Include="Takenet.Text.nuspec" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
