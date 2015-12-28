@@ -114,7 +114,7 @@ var alternativeSubtractSyntax = CsdlParser.Parse("a:Integer :Word(minus) b:Integ
 
 // 3. Multiply:            
 // a) The default syntax, for inputs like 'multiply 3 and 3' or 'multiply 5 2'
-var multiplySyntax = CsdlParser.Parse("operation+:Word(multiply,mul) a:Integer :Word?(and) b:Integer");
+var multiplySyntax = CsdlParser.Parse("operation+:Word(multiply,mul) a:Integer :Word?(and,by) b:Integer");
 // b) The alternative syntax, for inputs like '6 times 2'
 var alternativeMultiplySyntax = CsdlParser.Parse("a:Integer :Word(times) b:Integer");
 
@@ -162,11 +162,10 @@ textProcessor.AddCommandProcessor(divideCommandProcessor);
 
 ```
 
-
 Submitting the input:
 
 ```csharp
-Console.Write("Input > ");
+Console.Write("> ");
 
 try
 {
@@ -179,3 +178,33 @@ catch (MatchNotFoundException)
 ```
 
 Results:
+
+```
+> sum 2 and 3
+Result: 5
+
+> 12 plus 3
+Result: 15
+
+> subtract 30 from 90
+Result: 60
+
+> 77 minus 27
+Result: 50
+
+> multiply 2 and 3
+Result: 6
+
+> 6 times 6
+Result: 36
+
+> divide 30 by 5
+Result: 6
+
+> 100 by 10
+Result: 10
+
+> sum two and three
+There's no match for the specified input
+
+```

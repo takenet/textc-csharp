@@ -26,7 +26,8 @@ namespace Takenet.Text.Samples
             string inputText;
             do
             {
-                Console.Write("Input > ");
+                Console.WriteLine();
+                Console.Write("> ");
                 inputText = Console.ReadLine();
 
                 var sw = Stopwatch.StartNew();
@@ -45,7 +46,10 @@ namespace Takenet.Text.Samples
                 }
 
                 sw.Stop();
+
+#if DEBUG
                 Console.WriteLine("Elapsed: {0} ms ({1} ticks)", sw.ElapsedMilliseconds, sw.ElapsedTicks);
+#endif
 
             } while (!string.IsNullOrWhiteSpace(inputText));
 
@@ -76,7 +80,7 @@ namespace Takenet.Text.Samples
 
             // 3. Multiply:            
             // a) The default syntax, for inputs like 'multiply 3 and 3' or 'multiply 5 2'
-            var multiplySyntax = CsdlParser.Parse("operation+:Word(multiply,mul) a:Integer :Word?(and) b:Integer");
+            var multiplySyntax = CsdlParser.Parse("operation+:Word(multiply,mul) a:Integer :Word?(and,by) b:Integer");
             // b) The alternative syntax, for inputs like '6 times 2'
             var alternativeMultiplySyntax = CsdlParser.Parse("a:Integer :Word(times) b:Integer");
 
