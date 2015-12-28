@@ -65,7 +65,7 @@ Now, our syntax allow us to parse inputs like `sum 1 2`.
 
 
 | Name     | Description                         | Sample values       |
-| -----------------------------------------------|---------------------|
+| ---------|-------------------------------------|---------------------|
 | Decimal  | A culture-invariant decimal number. |  `-1.123`,`0.1231`,`1.1`, `131.2` |
 | Integer  | A 32 bit number.                    |  `-1`,`0`,`1`, `300` |
 | Long     | A 64 bit number.                    |  `-1`,`0`,`1`, `292908889192986509` |
@@ -77,7 +77,7 @@ Now, our syntax allow us to parse inputs like `sum 1 2`.
 
 
 | Name      | Description                         | Sample values       |
-| ------------------------------------------------|---------------------|
+| ----------|-------------------------------------|---------------------|
 | LDWord    | A levenshtein distance text word. It parses any word with a default distance of 2 characters from the initialization values. | `Mispelled` |
 | Regex     | A text with an regex initializer. Note that this token type will consume all remaining input that matches the specified regex. | `Mycustom text`    |
 | RegexWord | A text word with an regex initializer. It allows more flexible parsing rules. | `custom-word-pattern`    |
