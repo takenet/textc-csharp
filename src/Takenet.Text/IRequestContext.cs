@@ -14,7 +14,7 @@
         void SetVariable(string name, object value);
 
         /// <summary>
-        /// Gets an existing variable value.
+        /// Gets an existing variable value from the context.
         /// </summary>
         /// <param name="name">The variable name</param>
         /// <returns>If the variable is defined, its value; otherwise null.</returns>

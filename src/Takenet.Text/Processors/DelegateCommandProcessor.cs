@@ -14,14 +14,8 @@ namespace Takenet.Text.Processors
         private readonly ParameterInfo[] _actionParameters;
         private readonly bool _allowNullOnNullableParameters;
 
-        private DelegateCommandProcessor(Delegate @delegate, bool allowNullOnNullableParameters,
-            IOutputProcessor outputProcessor, params Syntax[] syntaxes)
+        public DelegateCommandProcessor(Delegate @delegate, bool allowNullOnNullableParameters = true, IOutputProcessor outputProcessor = null, params Syntax[] syntaxes)
         {
-            if (syntaxes == null ||
-                !syntaxes.Any())
-            {
-                throw new ArgumentNullException(nameof(syntaxes));
-            }
             if (@delegate == null)
             {
                 throw new ArgumentNullException(nameof(@delegate));
@@ -29,15 +23,19 @@ namespace Takenet.Text.Processors
 
             if (!typeof(Task).IsAssignableFrom(@delegate.Method.ReturnType))
             {
-                throw new ArgumentException("The delegate must return a Task");
+                throw new ArgumentException("The delegate must return a Task", nameof(@delegate));
             }
 
-            if (outputProcessor != null &&
-                !@delegate.Method.ReturnType.IsGenericType)
+            if (outputProcessor != null && !@delegate.Method.ReturnType.IsGenericType)
             {
-                throw new ArgumentException("A delegate with return value is required to use with an output processor");
+                throw new ArgumentException("A delegate with return value is required to use with an output processor", nameof(outputProcessor));
             }
 
+            if (syntaxes == null || syntaxes.Length == 0)
+            {
+                throw new ArgumentNullException(nameof(syntaxes));
+            }            
+           
             _delegate = @delegate;
             _allowNullOnNullableParameters = allowNullOnNullableParameters;
             OutputProcessor = outputProcessor;

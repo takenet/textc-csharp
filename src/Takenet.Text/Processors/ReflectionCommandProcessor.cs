@@ -4,6 +4,9 @@ using System.Threading.Tasks;
 
 namespace Takenet.Text.Processors
 {
+    /// <summary>
+    /// Processes commands using type reflection.
+    /// </summary>
     public class ReflectionCommandProcessor : ICommandProcessor
     {
         private readonly bool _allowNullOnNullableParameters;
@@ -11,40 +14,39 @@ namespace Takenet.Text.Processors
         private readonly ParameterInfo[] _methodParameters;
         private readonly object _processor;
 
-        public ReflectionCommandProcessor(object processor, string methodName, bool allowNullOnNullableParameters,
-            IOutputProcessor outputProcessor, params Syntax[] syntaxes)
+        public ReflectionCommandProcessor(object processor, string methodName, bool allowNullOnNullableParameters = true,
+            IOutputProcessor outputProcessor = null, params Syntax[] syntaxes)
         {
+            // Static validation
             if (processor == null)
             {
                 throw new ArgumentNullException(nameof(processor));
             }
-
-            _processor = processor;
-            var processorType = processor.GetType();
-
-            if (syntaxes == null ||
-                syntaxes.Length == 0)
-            {
-                throw new ArgumentNullException(nameof(syntaxes));
-            }
-
-            Syntaxes = syntaxes;
-
-            _allowNullOnNullableParameters = allowNullOnNullableParameters;
 
             if (string.IsNullOrWhiteSpace(methodName))
             {
                 throw new ArgumentNullException(nameof(methodName));
             }
 
+            if (syntaxes == null || syntaxes.Length == 0)
+            {
+                throw new ArgumentNullException(nameof(syntaxes));
+            }
+            
+            _processor = processor;            
+            _allowNullOnNullableParameters = allowNullOnNullableParameters;
+            Syntaxes = syntaxes;
+
+            // Dynamic validation
+            var processorType = processor.GetType();
             _method = processorType.GetMethod(methodName);
 
             if (_method == null)
             {
-                throw new ArgumentException($"Type '{processorType.Name}' doesn't contains method '{methodName}'");
+                throw new ArgumentException($"Type '{processorType.Name}' doesn't contains method '{methodName}'", nameof(methodName));
             }
 
-            if (!typeof (Task).IsAssignableFrom(_method.ReturnType))
+            if (!typeof(Task).IsAssignableFrom(_method.ReturnType))
             {
                 throw new ArgumentException("The method must return a Task");
             }
@@ -54,9 +56,7 @@ namespace Takenet.Text.Processors
             {
                 throw new ArgumentException("A method with return value is required to use with an output processor");
             }
-
             OutputProcessor = outputProcessor;
-
             _methodParameters = _method.GetParameters();
 
             TypeUtil.CheckSyntaxesForParameters(syntaxes, _methodParameters);
