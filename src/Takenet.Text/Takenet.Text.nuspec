@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
   <metadata>
     <id>Takenet.Text</id>
-    <version>0.1.0</version>
+    <version>0.1.1</version>
     <title>Text</title>
     <authors>takenet</authors>
     <owners>takenet,andrebires</owners>
@@ -12,9 +12,12 @@
     <description>Text command parsing library</description>
     <copyright>Copyright © 2015 Curupira S/A</copyright>
     <tags>text,natural language</tags>
+    <dependencies>
+      <dependency id="Newtonsoft.Json" />
+    </dependencies>
   </metadata>
   <files>
     <file src="bin\Release\Takenet.Text.dll" target="lib\net451\Takenet.Text.dll" />
     <file src="bin\Release\Takenet.Text.XML" target="lib\net451\Takenet.Text.XML" />
-  </files>
+  </files>  
 </package>
