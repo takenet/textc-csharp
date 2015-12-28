@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
   <metadata>
     <id>Takenet.Text</id>
-    <version>0.1.1</version>
+    <version>0.1.2</version>
     <title>Text</title>
     <authors>takenet</authors>
     <owners>takenet,andrebires</owners>
@@ -13,7 +13,7 @@
     <copyright>Copyright © 2015 Curupira S/A</copyright>
     <tags>text,natural language</tags>
     <dependencies>
-      <dependency id="Newtonsoft.Json" />
+      <dependency id="Newtonsoft.Json" version="7.0.1" />
     </dependencies>
   </metadata>
   <files>
