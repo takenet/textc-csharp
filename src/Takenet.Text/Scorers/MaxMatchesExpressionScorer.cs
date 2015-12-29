@@ -1,5 +1,5 @@
 ﻿using System.Linq;
-using Takenet.Text.Templates;
+using Takenet.Text.Types;
 
 namespace Takenet.Text.Scorers
 {
@@ -7,10 +7,10 @@ namespace Takenet.Text.Scorers
     {
         public decimal GetScore(Expression expression)
         {
-            // TextTokenTemplate is too wide to be accounted on the input score
+            // TextTokenType is too wide to be accounted on the input score
             return expression.Tokens.Count(t => t != null) +
                    expression.Tokens.Count(
-                       t => t != null && t.Source == TokenSource.Input && !(t.Template is TextTokenTemplate));
+                       t => t != null && t.Source == TokenSource.Input && !(t.Type is TextTokenType));
         }
     }
 }

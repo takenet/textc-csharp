@@ -4,7 +4,7 @@ using System.Linq;
 using System.Reflection;
 using Takenet.Text.Metadata;
 using Takenet.Text.Processors;
-using Takenet.Text.Templates;
+using Takenet.Text.Types;
 
 namespace Takenet.Text.Csdl
 {
@@ -13,105 +13,105 @@ namespace Takenet.Text.Csdl
     /// </summary>
     public static class CsdlParser
     {
-        private static readonly IDictionary<string, Type> TokenTemplateTypeDictionary = new Dictionary<string, Type>();
+        private static readonly IDictionary<string, Type> TokenTypeDictionary = new Dictionary<string, Type>();
 
         static CsdlParser()
         {
             var loadedAssemblies = AppDomain
                 .CurrentDomain
                 .GetAssemblies()
-                .Where(a => a.GetCustomAttributes(typeof (TokenTemplateLibraryAttribute), false).Any());
+                .Where(a => a.GetCustomAttributes(typeof (TokenTypeLibraryAttribute), false).Any());
 
             foreach (var assembly in loadedAssemblies)
             {
-                LoadTemplatesFromAssembly(assembly);
+                LoadTokenTypesFromAssembly(assembly);
             }
         }
 
-        private static void LoadTemplatesFromAssembly(Assembly assembly)
+        private static void LoadTokenTypesFromAssembly(Assembly assembly)
         {
             var types = assembly.GetTypes();
 
             foreach (var type in types)
             {
-                var tokenTemplateAttribute =
-                    type.GetCustomAttributes(typeof (TokenTemplateAttribute), false).FirstOrDefault() as
-                        TokenTemplateAttribute;
+                var tokenTypeAttribute =
+                    type.GetCustomAttributes(typeof (TokenTypeAttribute), false).FirstOrDefault() as
+                        TokenTypeAttribute;
 
-                if (tokenTemplateAttribute != null &&
-                    typeof (ITokenTemplate).IsAssignableFrom(type))
+                if (tokenTypeAttribute != null &&
+                    typeof (ITokenType).IsAssignableFrom(type))
                 {
-                    var registerTokenTemplateMethod = typeof (CsdlParser).GetMethod("RegisterTokenTemplate");
-                    var genericRegisterTokenTemplateMethod = registerTokenTemplateMethod.MakeGenericMethod(type);
+                    var registerTokenTypeMethod = typeof (CsdlParser).GetMethod(nameof(RegisterTokenType));
+                    var genericRegisterTokenTypeMethod = registerTokenTypeMethod.MakeGenericMethod(type);
 
-                    genericRegisterTokenTemplateMethod.Invoke(null, null);
+                    genericRegisterTokenTypeMethod.Invoke(null, null);
                 }
             }
         }
 
         /// <summary>
-        /// Registers a token template type.
+        /// Registers a token type.
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <exception cref="System.ArgumentException">
         /// </exception>
-        public static void RegisterTokenTemplate<T>() where T : ITokenTemplate
+        public static void RegisterTokenType<T>() where T : ITokenType
         {
-            var tokenTemplateType = typeof (T);
+            var tokenType = typeof (T);
 
-            var tokenTemplateAttribute =
-                Attribute.GetCustomAttribute(tokenTemplateType, typeof (TokenTemplateAttribute)) as
-                    TokenTemplateAttribute;
+            var tokenTypeAttribute =
+                Attribute.GetCustomAttribute(tokenType, typeof (TokenTypeAttribute)) as
+                    TokenTypeAttribute;
 
-            if (tokenTemplateAttribute != null)
+            if (tokenTypeAttribute != null)
             {
-                if (!TokenTemplateTypeDictionary.ContainsKey(tokenTemplateAttribute.ShortName))
+                if (!TokenTypeDictionary.ContainsKey(tokenTypeAttribute.ShortName))
                 {
-                    TokenTemplateTypeDictionary.Add(tokenTemplateAttribute.ShortName, tokenTemplateType);
+                    TokenTypeDictionary.Add(tokenTypeAttribute.ShortName, tokenType);
                 }
                 else
                 {
                     throw new ArgumentException(
-                        $"There's already a token template with name '{tokenTemplateAttribute.ShortName}' registered");
+                        $"There's already a token type with name '{tokenTypeAttribute.ShortName}' registered");
                 }
             }
             else
             {
                 throw new ArgumentException(
-                    $"Type '{tokenTemplateType.Name}' is not decorated with TokenTemplateAttribute");
+                    $"Type '{tokenType.Name}' is not decorated with '{nameof(TokenTypeAttribute)}'");
             }
         }
 
         /// <summary>
-        /// Unregisters a token template type.
+        /// Unregisters a token type.
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <exception cref="System.ArgumentException">
         /// </exception>
-        public static void UnregisterTokenTemplate<T>() where T : ITokenTemplate
+        public static void UnregisterTokenType<T>() where T : ITokenType
         {
-            var tokenTemplateType = typeof (T);
+            var tokenType = typeof (T);
 
-            var tokenTemplateAttribute =
-                Attribute.GetCustomAttribute(tokenTemplateType, typeof (TokenTemplateAttribute)) as
-                    TokenTemplateAttribute;
+            var tokenTypeAttribute =
+                Attribute.GetCustomAttribute(tokenType, typeof (TokenTypeAttribute)) as
+                    TokenTypeAttribute;
 
-            if (tokenTemplateAttribute != null)
+            if (tokenTypeAttribute != null)
             {
-                if (TokenTemplateTypeDictionary.ContainsKey(tokenTemplateAttribute.ShortName))
+                if (TokenTypeDictionary.ContainsKey(tokenTypeAttribute.ShortName))
                 {
-                    TokenTemplateTypeDictionary.Remove(tokenTemplateAttribute.ShortName);
+                    TokenTypeDictionary.Remove(tokenTypeAttribute.ShortName);
                 }
                 else
                 {
                     throw new ArgumentException(
-                        $"There's no token template with name '{tokenTemplateAttribute.ShortName}' registered");
+                        $"There's no token type with name '{tokenTypeAttribute.ShortName}' registered");
                 }
             }
             else
             {
                 throw new ArgumentException(
-                    $"Type '{tokenTemplateType.Name}' is not decorated with TokenTemplateAttribute");
+                    $"Type '{tokenType.Name}' is not decorated with '{nameof(TokenTypeAttribute)}'");
             }
         }
 
@@ -123,33 +123,30 @@ namespace Takenet.Text.Csdl
         public static Syntax Parse(string syntaxPattern)
         {
             var syntax = new CsdlSyntax(syntaxPattern);
-            return syntax.ToSyntax(TokenTemplateTypeDictionary);
+            return syntax.ToSyntax(TokenTypeDictionary);
         }
 
         /// <summary>
         /// Creates a simple CSDL string for a method.
         /// </summary>
-        public static CsdlSyntax CreateBasicSyntaxForMethod(MethodInfo methodInfo, bool rightToLeftParsing,
-            bool perfectMatchOnly)
+        public static CsdlSyntax CreateBasicSyntaxForMethod(MethodInfo methodInfo, bool rightToLeftParsing, bool perfectMatchOnly)
         {
             if (methodInfo == null)
             {
                 throw new ArgumentNullException(nameof(methodInfo));
             }
 
-            var parameters = methodInfo.GetParameters();
-
             var csdlTokenList = new List<CsdlToken>();
 
             foreach (var parameter in methodInfo.GetParameters())
             {
-                var tokenTemplateType =
-                    TokenTemplateTypeDictionary
-                        .FirstOrDefault(v => TypeUtil.GetGenericTokenTemplateParameterType(v.Value) == parameter.ParameterType);
+                var tokenTypeType =
+                    TokenTypeDictionary
+                        .FirstOrDefault(v => TypeUtil.GetGenericTokenTypeParameterType(v.Value) == parameter.ParameterType);
 
-                if (tokenTemplateType.Key != null)
+                if (tokenTypeType.Key != null)
                 {
-                    var csdlToken = new CsdlToken(parameter.Name, tokenTemplateType.Key,
+                    var csdlToken = new CsdlToken(parameter.Name, tokenTypeType.Key,
                         TypeUtil.IsNullable(parameter.ParameterType), false, null);
                     csdlTokenList.Add(csdlToken);
                 }
@@ -157,7 +154,7 @@ namespace Takenet.Text.Csdl
                          parameter.ParameterType != typeof (Expression))
                 {
                     throw new ArgumentException(
-                        $"There's no registered token template for type '{parameter.ParameterType}'");
+                        $"There's no registered token type for type '{parameter.ParameterType}'");
                 }
             }
 

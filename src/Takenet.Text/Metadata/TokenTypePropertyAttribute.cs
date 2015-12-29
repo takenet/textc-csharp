@@ -3,7 +3,7 @@
 namespace Takenet.Text.Metadata
 {
     [AttributeUsage(AttributeTargets.Property)]
-    public class TokenTemplatePropertyAttribute : Attribute
+    public class TokenTypePropertyAttribute : Attribute
     {
         public bool IsDefault { get; set; }
     }

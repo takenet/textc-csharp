@@ -1,18 +1,18 @@
 ﻿using System;
 using Takenet.Text.Metadata;
 
-namespace Takenet.Text.Templates
+namespace Takenet.Text.Types
 {
-    [TokenTemplate(ShortName = "LDWord")]
-    public class LevenshteinDistanceWordTokenTemplate : ValueTokenTemplateBase<string>
+    [TokenType(ShortName = "LDWord")]
+    public class LevenshteinDistanceWordTokenType : ValueTokenTypeBase<string>
     {
-        public LevenshteinDistanceWordTokenTemplate(string name, bool isContextual, bool isOptional, bool invertParsing)
+        public LevenshteinDistanceWordTokenType(string name, bool isContextual, bool isOptional, bool invertParsing)
             : base(name, isContextual, isOptional, invertParsing)
         {
             MaxDistance = 2;
         }
 
-        [TokenTemplateProperty]
+        [TokenTypeProperty]
         public int MaxDistance { get; internal set; }
 
         protected override bool HasMatch(string value, IRequestContext context, out string bestMatch)

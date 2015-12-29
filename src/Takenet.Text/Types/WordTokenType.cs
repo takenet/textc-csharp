@@ -1,12 +1,12 @@
 ﻿using System;
 using Takenet.Text.Metadata;
 
-namespace Takenet.Text.Templates
+namespace Takenet.Text.Types
 {
-    [TokenTemplate(ShortName = "Word")]
-    public class WordTokenTemplate : ValueTokenTemplateBase<string>
+    [TokenType(ShortName = "Word")]
+    public class WordTokenType : ValueTokenTypeBase<string>
     {
-        public WordTokenTemplate(string name, bool isContextual, bool isOptional, bool invertParsing)
+        public WordTokenType(string name, bool isContextual, bool isOptional, bool invertParsing)
             : base(name, isContextual, isOptional, invertParsing)
         {
         }

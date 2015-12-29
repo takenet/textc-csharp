@@ -3,22 +3,22 @@ using System.Collections.Generic;
 using System.Linq;
 using Takenet.Text.Metadata;
 
-namespace Takenet.Text.Templates
+namespace Takenet.Text.Types
 {
-    public abstract class ValueTokenTemplateBase<T> : TokenTemplate<T>
+    public abstract class ValueTokenTypeBase<T> : TokenType<T>
     {
-        protected ValueTokenTemplateBase(string name, bool isContextual, bool isOptional, bool invertParsing)
+        protected ValueTokenTypeBase(string name, bool isContextual, bool isOptional, bool invertParsing)
             : base(name, isContextual, isOptional, invertParsing)
         {
         }
 
-        [TokenTemplateProperty(IsDefault = true)]
+        [TokenTypeProperty(IsDefault = true)]
         public T[] ValidValues { get; internal set; }
 
-        [TokenTemplateProperty]
+        [TokenTypeProperty]
         public string ContextVariableName { get; internal set; }
 
-        [TokenTemplateProperty]
+        [TokenTypeProperty]
         public string ValidValuesVariableName { get; internal set; }
 
         public override bool TryGetTokenFromInput(ITextCursor textCursor, out T token)

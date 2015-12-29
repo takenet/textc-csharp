@@ -8,31 +8,31 @@
         public bool TryParse(ITextCursor textCursor, Syntax syntax, IRequestContext context, out Expression expression)
         {
             var queryMatch = true;
-            var tokens = new Token[syntax.TokenTemplates.Length];
+            var tokens = new Token[syntax.TokenTypes.Length];
             var leftPos = 0;
-            var rightPos = syntax.TokenTemplates.Length - 1;
+            var rightPos = syntax.TokenTypes.Length - 1;
 
             while (leftPos <= rightPos)
             {
                 var pos = textCursor.RightToLeftParsing ? rightPos : leftPos;
-                var tokenTemplate = syntax.TokenTemplates[pos];
+                var tokenType = syntax.TokenTypes[pos];
 
-                if (tokenTemplate != null)
+                if (tokenType != null)
                 {
                     textCursor.SavePosition();
 
                     object queryToken;
-                    if (tokenTemplate.TryGetTokenFromInput(textCursor, out queryToken))
+                    if (tokenType.TryGetTokenFromInput(textCursor, out queryToken))
                     {
-                        tokens[pos] = new Token(queryToken, TokenSource.Input, tokenTemplate);
+                        tokens[pos] = new Token(queryToken, TokenSource.Input, tokenType);
                     }
                     else if (context != null &&
-                             tokenTemplate.TryGetTokenFromContext(context, out queryToken))
+                             tokenType.TryGetTokenFromContext(context, out queryToken))
                     {
                         textCursor.RollbackPosition();
-                        tokens[pos] = new Token(queryToken, TokenSource.Context, tokenTemplate);
+                        tokens[pos] = new Token(queryToken, TokenSource.Context, tokenType);
                     }
-                    else if (!tokenTemplate.IsOptional)
+                    else if (!tokenType.IsOptional)
                     {
                         queryMatch = false;
                         break;
@@ -52,8 +52,8 @@
                     leftPos++;
                 }
 
-                if (tokenTemplate != null &&
-                    tokenTemplate.InvertParsing)
+                if (tokenType != null &&
+                    tokenType.InvertParsing)
                 {
                     textCursor.InvertParsing();
                 }

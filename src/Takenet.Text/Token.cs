@@ -1,4 +1,4 @@
-﻿using Takenet.Text.Templates;
+﻿using Takenet.Text.Types;
 
 namespace Takenet.Text
 {
@@ -12,12 +12,12 @@ namespace Takenet.Text
         /// </summary>
         /// <param name="value">The value.</param>
         /// <param name="source">The source.</param>
-        /// <param name="template">The template.</param>
-        public Token(object value, TokenSource source, ITokenTemplate template)
+        /// <param name="type">The type.</param>
+        public Token(object value, TokenSource source, ITokenType type)
         {
             Value = value;
             Source = source;
-            Template = template;
+            Type = type;
         }
 
         /// <summary>
@@ -31,9 +31,9 @@ namespace Takenet.Text
         public TokenSource Source { get; private set; }
 
         /// <summary>
-        /// Gets the associated token template.
+        /// Gets the associated token type.
         /// </summary>
-        public ITokenTemplate Template { get; private set; }
+        public ITokenType Type { get; private set; }
     }
 
     /// <summary>

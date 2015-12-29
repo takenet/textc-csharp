@@ -2,7 +2,7 @@
 using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
-using Takenet.Text.Templates;
+using Takenet.Text.Types;
 
 namespace Takenet.Text.Processors
 {
@@ -47,7 +47,7 @@ namespace Takenet.Text.Processors
                 var methodParameter = methodParameters[i];
 
                 var parameterToken = expression.Tokens.FirstOrDefault(t => t != null &&
-                                                                           t.Template.Name == methodParameter.Name);
+                                                                           t.Type.Name == methodParameter.Name);
 
                 if (parameterToken != null)
                 {
@@ -83,16 +83,16 @@ namespace Takenet.Text.Processors
                 // Checa se a sintaxe cobre todos os parametros da ação
                 foreach (var methodParameter in methodParameters)
                 {
-                    var tokenTemplate = syntax.TokenTemplates.FirstOrDefault(t => t.Name == methodParameter.Name);
+                    var tokenType = syntax.TokenTypes.FirstOrDefault(t => t.Name == methodParameter.Name);
 
-                    if (tokenTemplate != null)
+                    if (tokenType != null)
                     {
-                        var tokenTemplateType = tokenTemplate.GetType();
+                        var tokenTypeType = tokenType.GetType();
 
                         Type genericTokenType = null;
 
                         // Verifica se o tipo do parâmetro é compatível
-                        if (TryGetGenericTokenTemplateParameterType(tokenTemplateType, out genericTokenType))
+                        if (TryGetGenericTokenTypeParameterType(tokenTypeType, out genericTokenType))
                         {
                             if (genericTokenType != methodParameter.ParameterType)
                             {
@@ -102,7 +102,7 @@ namespace Takenet.Text.Processors
                                 if (
                                     !(IsSubclassOfRawGeneric(typeof (Nullable<>), methodParameter.ParameterType,
                                         out baseType) &&
-                                      tokenTemplate.IsOptional &&
+                                      tokenType.IsOptional &&
                                       methodParameter.ParameterType.GetGenericArguments().FirstOrDefault() ==
                                       genericTokenType))
                                 {
@@ -126,14 +126,14 @@ namespace Takenet.Text.Processors
             }
         }
 
-        public static bool TryGetGenericTokenTemplateParameterType(Type tokenTemplateType, out Type genericParameterType)
+        public static bool TryGetGenericTokenTypeParameterType(Type tokenTypeType, out Type genericParameterType)
         {
             var result = false;
             genericParameterType = null;
 
             Type baseType = null;
 
-            if (IsSubclassOfRawGeneric(typeof (TokenTemplate<>), tokenTemplateType, out baseType))
+            if (IsSubclassOfRawGeneric(typeof (TokenType<>), tokenTypeType, out baseType))
             {
                 genericParameterType = baseType.GetGenericArguments().First();
                 result = true;
@@ -142,10 +142,10 @@ namespace Takenet.Text.Processors
             return result;
         }
 
-        public static Type GetGenericTokenTemplateParameterType(Type tokenTemplateType)
+        public static Type GetGenericTokenTypeParameterType(Type tokenTypeType)
         {
-            Type genericParameterType = null;
-            TryGetGenericTokenTemplateParameterType(tokenTemplateType, out genericParameterType);
+            Type genericParameterType;
+            TryGetGenericTokenTypeParameterType(tokenTypeType, out genericParameterType);
             return genericParameterType;
         }
 

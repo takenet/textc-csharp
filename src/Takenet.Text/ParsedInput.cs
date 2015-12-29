@@ -33,11 +33,11 @@ namespace Takenet.Text
             {
                 // Apply the contextual tokens
                 foreach (var token in Expression.Tokens.Where(t =>
-                    t.Template.IsContextual &&
+                    t.Type.IsContextual &&
                     t.Source == TokenSource.Input &&
                     t.Value != null))
                 {
-                    Expression.Context.SetVariable(token.Template.Name, token.Value);
+                    Expression.Context.SetVariable(token.Type.Name, token.Value);
                 }
             }
 

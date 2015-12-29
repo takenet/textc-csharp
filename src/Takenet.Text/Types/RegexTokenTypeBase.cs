@@ -1,19 +1,19 @@
 ﻿using System.Text.RegularExpressions;
 using Takenet.Text.Metadata;
 
-namespace Takenet.Text.Templates
+namespace Takenet.Text.Types
 {
-    public abstract class RegexTokenTemplateBase<T> : TokenTemplate<T>
+    public abstract class RegexTokenTypeBase<T> : TokenType<T>
     {
         protected Regex Expression;
         private string _pattern;
 
-        protected RegexTokenTemplateBase(string name, bool isContextual, bool isOptional, bool invertParsing)
+        protected RegexTokenTypeBase(string name, bool isContextual, bool isOptional, bool invertParsing)
             : base(name, isContextual, isOptional, invertParsing)
         {
         }
 
-        [TokenTemplateProperty(IsDefault = true)]
+        [TokenTypeProperty(IsDefault = true)]
         public string Pattern
         {
             get { return _pattern; }

@@ -1,30 +1,30 @@
 ﻿using System.Text;
-using Takenet.Text.Templates;
+using Takenet.Text.Types;
 
 namespace Takenet.Text
 {
     /// <summary>
-    /// Defines a text structure with token templates that can be used to parse a text input into a <see cref="Expression" />.
+    /// Defines a text structure with token types that can be used to parse a text input into a <see cref="Expression" />.
     /// </summary>
     public sealed class Syntax
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="Syntax" /> class.
         /// </summary>
-        /// <param name="tokenTemplates">The token templates.</param>
+        /// <param name="tokenTypes">The token types.</param>
         /// <param name="rightToLeftParsing">if set to <c>true</c> [right to left parsing].</param>
         /// <param name="perfectMatchOnly">if set to <c>true</c> [perfect match only].</param>
-        public Syntax(ITokenTemplate[] tokenTemplates, bool rightToLeftParsing, bool perfectMatchOnly)
+        public Syntax(ITokenType[] tokenTypes, bool rightToLeftParsing, bool perfectMatchOnly)
         {
-            TokenTemplates = tokenTemplates;
+            TokenTypes = tokenTypes;
             RightToLeftParsing = rightToLeftParsing;
             PerfectMatchOnly = perfectMatchOnly;
         }
 
         /// <summary>
-        /// Gets the syntax token templates.
+        /// Gets the syntax token types.
         /// </summary>
-        public ITokenTemplate[] TokenTemplates { get; }
+        public ITokenType[] TokenTypes { get; }
 
         /// <summary>
         /// Indicates if the parsing should be done from the right to the left direction.
@@ -47,11 +47,11 @@ namespace Takenet.Text
         {
             var builder = new StringBuilder();
 
-            if (TokenTemplates != null)
+            if (TokenTypes != null)
             {
-                foreach (var tokenTemplate in TokenTemplates)
+                foreach (var tokenType in TokenTypes)
                 {
-                    builder.AppendFormat("{0} ", tokenTemplate);
+                    builder.AppendFormat("{0} ", tokenType);
                 }
             }
 

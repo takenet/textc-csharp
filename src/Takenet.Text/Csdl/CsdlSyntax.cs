@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Takenet.Text.Templates;
+using Takenet.Text.Types;
 
 namespace Takenet.Text.Csdl
 {
@@ -90,29 +90,29 @@ namespace Takenet.Text.Csdl
         public CsdlToken[] Tokens { get; }
 
         /// <summary>
-        /// Converts to a <see cref="Syntax" /> instance, using the provided token templates.
+        /// Converts to a <see cref="Syntax" /> instance, using the provided token types.
         /// </summary>
-        /// <param name="tokenTemplateTypeDictionary">The token template type dictionary.</param>
+        /// <param name="tokenTypeTypeDictionary">The token type dictionary.</param>
         /// <returns></returns>
         /// <exception cref="System.ArgumentException">syntaxPattern</exception>
-        public Syntax ToSyntax(IDictionary<string, Type> tokenTemplateTypeDictionary)
+        public Syntax ToSyntax(IDictionary<string, Type> tokenTypeTypeDictionary)
         {
-            var tokenTemplates = new ITokenTemplate[Tokens.Count()];
+            var tokenTypes = new ITokenType[Tokens.Count()];
 
             for (var i = 0; i < Tokens.Count(); i++)
             {
                 var syntaxToken = Tokens[i];
 
-                if (tokenTemplates.Any(t => t != null && t.Name.Equals(syntaxToken.Name)))
+                if (tokenTypes.Any(t => t != null && t.Name.Equals(syntaxToken.Name)))
                 {
                     throw new InvalidOperationException(
                         $"The token name '{syntaxToken.Name}' is duplicated in the syntax definition");
                 }
 
-                tokenTemplates[i] = syntaxToken.ToTokenTemplate(tokenTemplateTypeDictionary);
+                tokenTypes[i] = syntaxToken.ToTokenType(tokenTypeTypeDictionary);
             }
 
-            var syntax = new Syntax(tokenTemplates, RightToLeftParsing, PerfectMatchOnly);
+            var syntax = new Syntax(tokenTypes, RightToLeftParsing, PerfectMatchOnly);
             return syntax;
         }
 

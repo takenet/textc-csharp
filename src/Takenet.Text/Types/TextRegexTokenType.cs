@@ -1,11 +1,11 @@
 ﻿using Takenet.Text.Metadata;
 
-namespace Takenet.Text.Templates
+namespace Takenet.Text.Types
 {
-    [TokenTemplate(ShortName = "TextRegex")]
-    public class TextRegexTokenTemplate : RegexTokenTemplateBase<string>
+    [TokenType(ShortName = "TextRegex")]
+    public class TextRegexTokenType : RegexTokenTypeBase<string>
     {
-        public TextRegexTokenTemplate(string name, bool isContextual, bool isOptional, bool invertParsing)
+        public TextRegexTokenType(string name, bool isContextual, bool isOptional, bool invertParsing)
             : base(name, isContextual, isOptional, invertParsing)
         {
         }

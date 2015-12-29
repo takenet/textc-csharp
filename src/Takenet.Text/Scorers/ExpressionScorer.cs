@@ -9,13 +9,13 @@ namespace Takenet.Text.Scorers
             // +1 for each hit
             // +1 if not optional
             // +1 if was from the input
-            decimal maxSyntaxMatchPoints = expression.Syntax.TokenTemplates.Count()*2 +
-                                           expression.Syntax.TokenTemplates.Count(t => !t.IsOptional);
+            decimal maxSyntaxMatchPoints = expression.Syntax.TokenTypes.Count()*2 +
+                                           expression.Syntax.TokenTypes.Count(t => !t.IsOptional);
 
             decimal expressionMatchPoints =
                 expression.Tokens.Count(t => t != null) +
                 expression.Tokens.Count(t => t != null && t.Source == TokenSource.Input) +
-                expression.Tokens.Count(t => t != null && !t.Template.IsOptional);
+                expression.Tokens.Count(t => t != null && !t.Type.IsOptional);
 
             return expressionMatchPoints/maxSyntaxMatchPoints;
         }

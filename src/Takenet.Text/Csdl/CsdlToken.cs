@@ -8,7 +8,7 @@ using System.Text.RegularExpressions;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Takenet.Text.Metadata;
-using Takenet.Text.Templates;
+using Takenet.Text.Types;
 
 namespace Takenet.Text.Csdl
 {
@@ -26,23 +26,22 @@ namespace Takenet.Text.Csdl
         public const char OPTIONAL_TOKEN = '?';
         public const char INVERT_PARSING_TOKEN = '~';
         public const char CONTEXTUAL_TOKEN = '+';
-        public const char JSON_TOKEN_TEMPLATE_PROPERTY_START = '{';
-        public const char JSON_TOKEN_TEMPLATE_PROPERTY_END = '}';
-        public const string DEFAULT_TOKEN_TEMPLATE_PROPERTY = "@DefaultTokenTemplateProperty";
-        public const char DEFAULT_TOKEN_TEMPLATE_PROPERTY_DELIMITER = '\'';
+        public const char JSON_TOKEN_TYPE_PROPERTY_START = '{';
+        public const char JSON_TOKEN_TYPE_PROPERTY_END = '}';
+        public const string DEFAULT_TOKEN_TYPE_PROPERTY = "@DefaultTokenTypeProperty";
+        public const char DEFAULT_TOKEN_TYPE_PROPERTY_DELIMITER = '\'';
 
 
-        private static readonly ITokenTemplateFactory _tokenTemplateFactory = new ActivatorTokenTemplateFactory();
+        private static readonly ITokenTypeFactory TokenTypeFactory = new ActivatorTokenTypeFactory();
 
-        public ITokenTemplate ToTokenTemplate(IDictionary<string, Type> tokenTemplateTypeDictionary)
+        public ITokenType ToTokenType(IDictionary<string, Type> tokenTypeTypeDictionary)
         {
-            Type tokenTemplateType;
+            Type tokenTypeType;
 
-            // Checks if the token template is registered
-            if (tokenTemplateTypeDictionary.TryGetValue(TokenTemplateTypeName, out tokenTemplateType))
+            // Checks if the token type is registered
+            if (tokenTypeTypeDictionary.TryGetValue(TokenTypeName, out tokenTypeType))
             {
-                var tokenTemplate = _tokenTemplateFactory.Create(tokenTemplateType, Name, IsContextual, IsOptional,
-                    InvertParsing);
+                var tokenType = TokenTypeFactory.Create(tokenTypeType, Name, IsContextual, IsOptional, InvertParsing);
 
                 // Initialize its properties
                 if (TokenPropertiesDictionary != null)
@@ -52,15 +51,15 @@ namespace Takenet.Text.Csdl
                         PropertyInfo property;
                         var isDefaultProperty = false;
 
-                        if (propertyName.Equals(DEFAULT_TOKEN_TEMPLATE_PROPERTY))
+                        if (propertyName.Equals(DEFAULT_TOKEN_TYPE_PROPERTY))
                         {
-                            var defaultProperty = tokenTemplateType
+                            var defaultProperty = tokenTypeType
                                 .GetProperties()
                                 .Where(p =>
                                 {
                                     var propertyAttribute =
-                                        Attribute.GetCustomAttribute(p, typeof (TokenTemplatePropertyAttribute)) as
-                                            TokenTemplatePropertyAttribute;
+                                        Attribute.GetCustomAttribute(p, typeof (TokenTypePropertyAttribute)) as
+                                            TokenTypePropertyAttribute;
                                     return propertyAttribute != null && propertyAttribute.IsDefault;
                                 })
                                 .FirstOrDefault();
@@ -73,12 +72,12 @@ namespace Takenet.Text.Csdl
                             else
                             {
                                 throw new ArgumentException(
-                                    $"There's no default property on token template '{TokenTemplateTypeName}'");
+                                    $"There's no default property on token type '{TokenTypeName}'");
                             }
                         }
                         else
                         {
-                            property = tokenTemplateType.GetProperty(propertyName);
+                            property = tokenTypeType.GetProperty(propertyName);
                         }
 
                         if (property != null)
@@ -110,21 +109,21 @@ namespace Takenet.Text.Csdl
                                     property.PropertyType);
                             }
 
-                            property.SetValue(tokenTemplate, propertyValue, null);
+                            property.SetValue(tokenType, propertyValue, null);
                         }
                         else
                         {
                             throw new ArgumentException(
-                                $"There's no '{propertyName}' property on '{tokenTemplateType.Name}' token template type");
+                                $"There's no '{propertyName}' property on '{tokenTypeType.Name}' token type");
                         }
                     }
                 }
 
-                return tokenTemplate;
+                return tokenType;
             }
 
             throw new ArgumentException(
-                $"Could not find token template type '{TokenTemplateTypeName}' in the registered collection", nameof(tokenTemplateTypeDictionary));
+                $"Could not find token type '{TokenTypeName}' in the registered collection", nameof(tokenTypeTypeDictionary));
         }
 
         /// <summary>
@@ -195,7 +194,7 @@ namespace Takenet.Text.Csdl
 
                 if (initializatorStartIndex >= 0)
                 {
-                    TokenTemplateTypeName = tokenTypeInitializator.Substring(0, initializatorStartIndex);
+                    TokenTypeName = tokenTypeInitializator.Substring(0, initializatorStartIndex);
                     TokenPropertiesDictionary = new Dictionary<string, string>();
 
                     var initializatorEndIndex = tokenTypeInitializator.LastIndexOf(INITIALIZATOR_END);
@@ -205,8 +204,8 @@ namespace Takenet.Text.Csdl
 
                     // Check if the initialization content is a JSON
                     if (initializatorValues.Length > 0 &&
-                        initializatorValues[0] == JSON_TOKEN_TEMPLATE_PROPERTY_START &&
-                        initializatorValues[initializatorValues.Length - 1] == JSON_TOKEN_TEMPLATE_PROPERTY_END)
+                        initializatorValues[0] == JSON_TOKEN_TYPE_PROPERTY_START &&
+                        initializatorValues[initializatorValues.Length - 1] == JSON_TOKEN_TYPE_PROPERTY_END)
                     {
                         var jobject = JObject.Parse(initializatorValues);
 
@@ -217,25 +216,25 @@ namespace Takenet.Text.Csdl
                     }
                     else if (!string.IsNullOrWhiteSpace(initializatorValues))
                     {
-                        TokenPropertiesDictionary.Add(DEFAULT_TOKEN_TEMPLATE_PROPERTY,
-                            initializatorValues.Trim(DEFAULT_TOKEN_TEMPLATE_PROPERTY_DELIMITER));
+                        TokenPropertiesDictionary.Add(DEFAULT_TOKEN_TYPE_PROPERTY,
+                            initializatorValues.Trim(DEFAULT_TOKEN_TYPE_PROPERTY_DELIMITER));
                     }
                 }
                 else
                 {
-                    TokenTemplateTypeName = tokenTypeInitializator;
+                    TokenTypeName = tokenTypeInitializator;
                 }
 
-                if (TokenTemplateTypeName.EndsWith(OPTIONAL_TOKEN.ToString(CultureInfo.InvariantCulture)))
+                if (TokenTypeName.EndsWith(OPTIONAL_TOKEN.ToString(CultureInfo.InvariantCulture)))
                 {
                     IsOptional = true;
-                    TokenTemplateTypeName = TokenTemplateTypeName.TrimEnd(OPTIONAL_TOKEN);
+                    TokenTypeName = TokenTypeName.TrimEnd(OPTIONAL_TOKEN);
                 }
 
-                if (TokenTemplateTypeName.EndsWith(INVERT_PARSING_TOKEN.ToString(CultureInfo.InvariantCulture)))
+                if (TokenTypeName.EndsWith(INVERT_PARSING_TOKEN.ToString(CultureInfo.InvariantCulture)))
                 {
                     InvertParsing = true;
-                    TokenTemplateTypeName = TokenTemplateTypeName.TrimEnd(INVERT_PARSING_TOKEN);
+                    TokenTypeName = TokenTypeName.TrimEnd(INVERT_PARSING_TOKEN);
                 }
             }
             else
@@ -244,7 +243,7 @@ namespace Takenet.Text.Csdl
             }
         }
 
-        internal CsdlToken(string name, string tokenTemplateTypeName, bool isOptional, bool invertParsing,
+        internal CsdlToken(string name, string tokenTypeName, bool isOptional, bool invertParsing,
             IDictionary<string, string> tokenPropertiesDictionary)
         {
             if (string.IsNullOrEmpty(name))
@@ -252,17 +251,17 @@ namespace Takenet.Text.Csdl
                 throw new ArgumentNullException(nameof(name));
             }
 
-            if (string.IsNullOrEmpty(tokenTemplateTypeName))
+            if (string.IsNullOrEmpty(tokenTypeName))
             {
-                throw new ArgumentNullException(nameof(tokenTemplateTypeName));
+                throw new ArgumentNullException(nameof(tokenTypeName));
             }
 
             Name = name;
-            TokenTemplateTypeName = tokenTemplateTypeName;
+            TokenTypeName = tokenTypeName;
             IsOptional = isOptional;
             InvertParsing = invertParsing;
             TokenPropertiesDictionary = tokenPropertiesDictionary;
-            TokenText = $"{name}:{tokenTemplateTypeName}";
+            TokenText = $"{name}:{tokenTypeName}";
         }
 
         public string TokenText { get; }
@@ -271,7 +270,7 @@ namespace Takenet.Text.Csdl
 
         public bool IsContextual { get; }
 
-        public string TokenTemplateTypeName { get; }
+        public string TokenTypeName { get; }
 
         public IDictionary<string, string> TokenPropertiesDictionary { get; }
 

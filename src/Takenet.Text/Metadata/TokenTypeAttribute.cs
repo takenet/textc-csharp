@@ -4,11 +4,11 @@ using Takenet.Text.Csdl;
 namespace Takenet.Text.Metadata
 {
     [AttributeUsage(AttributeTargets.Class)]
-    public class TokenTemplateAttribute : Attribute
+    public class TokenTypeAttribute : Attribute
     {
-        public TokenTemplateAttribute()
+        public TokenTypeAttribute()
         {
-            FactoryType = typeof (ActivatorTokenTemplateFactory);
+            FactoryType = typeof (ActivatorTokenTypeFactory);
         }
 
         public string ShortName { get; set; }

@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using Takenet.Text.Metadata;
 
-namespace Takenet.Text.Templates
+namespace Takenet.Text.Types
 {
-    [TokenTemplate(ShortName = "Text")]
-    public class TextTokenTemplate : TokenTemplate<string>
+    [TokenType(ShortName = "Text")]
+    public class TextTokenType : TokenType<string>
     {
-        public TextTokenTemplate(string name, bool isContextual, bool isOptional, bool invertParsing)
+        public TextTokenType(string name, bool isContextual, bool isOptional, bool invertParsing)
             : base(name, isContextual, isOptional, invertParsing)
         {
         }

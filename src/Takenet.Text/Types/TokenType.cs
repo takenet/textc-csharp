@@ -1,12 +1,12 @@
-﻿namespace Takenet.Text.Templates
+﻿namespace Takenet.Text.Types
 {
     /// <summary>
-    /// Base class for token templates.
+    /// Base class for token types.
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public abstract class TokenTemplate<T> : ITokenTemplate
+    public abstract class TokenType<T> : ITokenType
     {
-        protected TokenTemplate(string name, bool isContextual, bool isOptional, bool invertParsing)
+        protected TokenType(string name, bool isContextual, bool isOptional, bool invertParsing)
         {
             Name = name;
             IsContextual = isContextual;
