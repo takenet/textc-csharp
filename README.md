@@ -58,7 +58,7 @@ Where:
 
 * **name** - The name of the token to be extracted, which must be unique in each declaration. This value is used to store values in the context or to bind to method parameters. Optional.
 * **type** - The type of the token to be extracted. The library define some basic types, like `Word` and `Integer`, but the developer can define its own types. Mandatory.
-* **initializer** - The initialization date for the token template, which is used in specific ways accordingly to the type.  For instance, in the `Word` type, it is used to define the set of words that can be parsed by the template. Optional.
+* **initializer** - The initialization date for the token type, which is used in specific ways accordingly to the type.  For instance, in the `Word` type, it is used to define the set of words that can be parsed by the token type. Optional.
 
 For instance, if we have a calculator that must accept commands like `sum 1 and 2` where `1` and `2` are variable values, the CSDL for this syntax is:
 
@@ -82,13 +82,42 @@ To notate that, we must put a question mark (`?`) character after the type defin
 
 In this case, the syntax can parse inputs like `sum 1 2`, but still `sum 1 and 2`.
 
-You can specify that a token value should be added to the context if the syntax is matched, by using the plus (`+`) character after the token name declaration:
+You can specify that a token value should be added to the context if the syntax is matched, by using the plus (`+`) character after the token name declaration (which in this case is mandatory), like this:
 
 ```
 operation+:Word(sum) num1:Integer :Word?(and) num2:Integer
 ```
 
 Now the `operation` variable is in the context and if next user input is just `1 and 2` or even `1 2`, this syntax will be matched.
+
+
+By default, the syntax parsing is done from left to right and a match can happen even if still is some text input to be consumed. 
+For instance, our previous syntax will match `sum 1 and 2 and 3 and 4`, but only the first two numbers will be considered.
+To avoid that, we can add boundaries to the syntax, like this:
+
+```
+[operation+:Word(sum) num1:Integer :Word?(and) num2:Integer]
+```
+
+We can also change the initial parsing direction of the syntax, by adding the circumflex (`^`) character in the start or the end of the syntax (in the start is not required, since by default the parsing is left to right).
+To parse from the right to left, we do:
+
+```
+[operation+:Word(sum) num1:Integer :Word?(and) num2:Integer]^
+```
+
+And we can change the direction during the parsing, by annoting the token type with a tilde (`~`) character, like this:
+
+```
+[operation+:Word(sum) num1:Integer :Word?~(and) num2:Integer]^
+```
+
+In this case, the parsing starts from the right and if there's a match of the `and` word, the parse of the input will continue from the left, with the first non-matched token (`operation` in this example).
+This is useful when you have `Text` token types in the beggining of the syntax. Imagine to match inputs like `translate oi mundo to english`, you need a syntax like:
+
+```
+[:Word?(translate) text:Text :Word~(to) language:Word(english,portuguese)]^
+```
 
 ### Basic token types
 
