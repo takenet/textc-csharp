@@ -31,8 +31,11 @@ When you start a (natural language) conversation with someone, some moments you 
 For instance, that this conversation:
 
 > John: What brand is your car?
+
 > Paul: My car is a BMW.
+
 > John: **And what color**?
+
 > Paul: It's yellow.
 
 In the second question, John didn't need to specify that he was talking about the car, because it was explicit in the context (an hidden subject), but if you had a syntax definition for this sentence, you should specify the car "variable" to avoid collisions with other subjects.
