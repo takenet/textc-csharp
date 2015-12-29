@@ -2,7 +2,7 @@
 
 **Note: This is a work in progress and is subject to change without notice.**
 
-**Text** is a natural language parser library that allows developers to build text-commands-based applications.
+**Textc** is a natural language parser library that allows developers to build text-commands based applications.
 
 
 ## NuGet
@@ -10,22 +10,41 @@
 [**Takenet.Textc**](https://www.nuget.org/packages/Takenet.Textc)
 
 
-## Concepts
+## How it works
 
-* Token - 
-* Token template - A definition 
-* Syntax
-* Text processor
-* Expression
-* Command processor
-* Context
 
+**Textc** do the **tokenization** of a text input by cross applying it to a collection of **syntaxes**.
+When there's more than one syntax match, the processing engine choses the best match by using a **scorer**.
+
+With the selected syntax, an **expression** is generated, which is submitted to a **command processor**. 
+The most common command processor implementation binds syntaxes to methods (or delegates) arguments, thought a conversion of the token type to the language (C#) type.
+
+The command processor can produce an output (like a method return value), which is handled by an **output processor**.
+
+## Context
+
+Beside the text input, the engine can also use the **request context** to fulfill a syntax token requirement. 
+The context is a dictionary of name/value variables and its idea is to be like a natural conversation context. 
+
+When you start a (natural language) conversation with someone, some moments you can omit parts of the sentences because its explicit in the context.
+
+For instance, that this conversation:
+
+> John: What brand is your car?
+> Paul: My car is a BMW.
+> John: **And what color**?
+> Paul: It's yellow.
+
+In the second question, John didn't need to specify that he was talking about the car, because it was explicit in the context (an hidden subject), but if you had a syntax definition for this sentence, you should specify the car "variable" to avoid collisions with other subjects.
+This is the same idea of the Textc context.
+
+You can add something to the context thought the syntax declaration or in the command processing.
 
 ### CSDL
 
-The **Command Syntax Definition Language** is the notation used by the library to allow developers define command syntaxes in a non-programmatic way.
+The **Command Syntax Definition Language** is a notation that allows the definition of syntaxes in a convenient way.
 
-A CSDL declaration is composed by one or more token templates, each one defined in the following way:
+A CSDL statement is composed by one or more token declarations, each one specified in the following way:
 
 
 ```
@@ -51,15 +70,22 @@ In this case, the syntax will be:
 :Word(sum) num1:Integer :Word(and) num2:Integer
 ```
 
-We can define optional tokens in the syntax definition, meaning that they can be present or not in the user input, without changing the semantics of the text. 
+We also can define optional tokens in the syntax, meaning that they can be present or not on the input, without changing the semantics of the text. 
 To notate that, we must put a question mark (`?`) character after the type definition:
 
 ```
 :Word(sum) num1:Integer :Word?(and) num2:Integer
 ```
 
-Now, our syntax allow us to parse inputs like `sum 1 2`.
+In this case, the syntax can parse inputs like `sum 1 2`, but still `sum 1 and 2`.
 
+You can specify that a token value should be added to the context if the syntax is matched, by using the plus (`+`) character after the token name declaration:
+
+```
+operation+:Word(sum) num1:Integer :Word?(and) num2:Integer
+```
+
+Now the `operation` variable is in the context and if next user input is just `1 and 2` or even `1 2`, this syntax will be matched.
 
 ### Basic token types
 
