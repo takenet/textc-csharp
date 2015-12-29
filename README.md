@@ -278,6 +278,7 @@ There's no match for the specified input
 
 ### Calendar
 
+Creating the text processor:
 
 ```csharp
 
@@ -361,6 +362,21 @@ public Task<IEnumerable<Reminder>> GetRemindersAsync(string when)
         _reminders.Where(r => r.When.Equals(when, StringComparison.OrdinalIgnoreCase)));
 }
 
+```
+
+Submitting the input:
+
+```csharp
+Console.Write("> ");
+
+try
+{
+    await textProcessor.ProcessAsync(Console.ReadLine(), context);
+}
+catch (MatchNotFoundException)
+{
+    Console.WriteLine("There's no match for the specified input");
+}
 ```
 
 Results:
