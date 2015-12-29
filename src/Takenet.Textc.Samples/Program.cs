@@ -15,7 +15,24 @@ namespace Takenet.Textc.Samples
 
         static async Task MainAsync(string[] args)
         {
-            var textProcessor = Calculator.CreateTextProcessor();
+            ITextProcessor textProcessor;
+
+            Console.WriteLine("Select the sample: ");
+            Console.WriteLine("1. Calculator");
+            Console.WriteLine("2. Calendar");
+
+            switch (Console.ReadLine()??"".Trim())
+            {
+                case "2":
+                    Console.WriteLine("Starting the calendar...");
+                    textProcessor = Calendar.CreateTextProcessor();
+                    break;
+
+                default:
+                    Console.WriteLine("Starting the calculator...");
+                    textProcessor = Calculator.CreateTextProcessor();
+                    break;
+            }            
 
             // Creates an empty context
             var context = new RequestContext();

@@ -276,6 +276,128 @@ There's no match for the specified input
 ```
 
 
+### Calendar
+
+
+```csharp
+
+// The calendar syntaxes, using some LDWords for input flexibility
+var addReminderSyntax = CsdlParser.Parse(
+    "^[:Word?(hey,ok) :LDWord?(calendar,agenda) :LDWord(remind) :Word?(me) :Word~(to,of) message:Text when:LDWord?(today,tomorrow,someday)]");
+var getRemindersSyntax = CsdlParser.Parse(
+    "[when:LDWord?(today,tomorrow,someday) :LDWord(reminders)]");
+
+// The output processors
+var addReminderOutputProcessor = new DelegateOutputProcessor<Reminder>((reminder, context) =>
+{
+    Console.WriteLine($"Reminder '{reminder.Message}' added successfully for '{reminder.When}'");
+});
+var getRemindersOutputProcessor = new DelegateOutputProcessor<IEnumerable<Reminder>>((reminders, context) =>
+{
+    var remindersDictionary = reminders
+        .GroupBy(r => r.When)
+        .ToDictionary(r => r.Key, r => r.Select(reminder => reminder.Message));
+
+    foreach (var when in remindersDictionary.Keys)
+    {
+        Console.WriteLine($"Reminders for {when}:");
+
+        foreach (var reminderMessage in remindersDictionary[when])
+        {
+            Console.WriteLine($"* {reminderMessage}");
+        }
+
+        Console.WriteLine();
+    }
+});
+
+// Creating a instance to be shared by all processors
+var calendar = new Calendar();
+
+// The reflection processor
+var addRemiderCommandProcessor = new ReflectionCommandProcessor(
+    calendar,
+    nameof(AddReminderAsync),
+    true,
+    addReminderOutputProcessor,
+    addReminderSyntax);
+
+var getRemidersCommandProcessor = new ReflectionCommandProcessor(
+    calendar,
+    nameof(GetRemindersAsync),
+    true,
+    getRemindersOutputProcessor,
+    getRemindersSyntax);
+
+// Registering the processors
+var textProcessor = new TextProcessor();
+textProcessor.AddCommandProcessor(addRemiderCommandProcessor);
+textProcessor.AddCommandProcessor(getRemidersCommandProcessor);
+
+// Adding some pre-processors to normalize the input text
+textProcessor.AddTextPreProcessor(new TextNormalizerPreProcessor());
+textProcessor.AddTextPreProcessor(new ToLowerCasePreProcessor());
+
+```
+
+The calendar class methods:
+
+```csharp
+public Task<Reminder> AddReminderAsync(string message, string when)
+{            
+    var reminder = new Reminder(message, when);
+    _reminders.Add(reminder);            
+    return Task.FromResult(reminder);            
+}
+
+public Task<IEnumerable<Reminder>> GetRemindersAsync(string when)
+{
+    if (string.IsNullOrEmpty(when))
+    {
+        return Task.FromResult<IEnumerable<Reminder>>(_reminders);
+    }
+
+    return Task.FromResult(
+        _reminders.Where(r => r.When.Equals(when, StringComparison.OrdinalIgnoreCase)));
+}
+
+```
+
+Results:
+
+```
+> remind me to write some unit tests for the library
+Reminder 'write some unit tests for the library ' added successfully for 'someday'
+
+> calendar, remind to pay my bills today
+Reminder 'pay my bills' added successfully for 'today'
+
+> renind to learn to write in english tomorou
+Reminder 'learn to write in english' added successfully for 'tomorrow'
+
+> remind   me  to   fix  my   keyboard
+Reminder 'fix my keyboard' added successfully for 'someday'
+
+> reminders
+Reminders for someday:
+* write some unit tests for the library
+* fix my keyboard
+
+Reminders for today:
+* pay my bills
+
+Reminders for tomorrow:
+* learn to write in english
+
+> todai reminders
+Reminders for today:
+* pay my bills
+
+```
+
+
+Creating the text processor:
+
 ## TODO
 
 [x] Import code from private repository

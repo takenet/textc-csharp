@@ -33,6 +33,7 @@ namespace Takenet.Textc
             {
                 // Apply the contextual tokens
                 foreach (var token in Expression.Tokens.Where(t =>
+                    t != null &&
                     t.Type.IsContextual &&
                     t.Source == TokenSource.Input &&
                     t.Value != null))
