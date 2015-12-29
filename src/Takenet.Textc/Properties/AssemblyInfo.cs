@@ -6,12 +6,12 @@ using Takenet.Textc.Metadata;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 
-[assembly: AssemblyTitle("Takenet.Text")]
+[assembly: AssemblyTitle("Takenet.Textc")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("Takenet.Text")]
-[assembly: AssemblyCopyright("Copyright ©  2015")]
+[assembly: AssemblyProduct("Takenet.Textc")]
+[assembly: AssemblyCopyright("Copyright ©  2015 Take.net")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

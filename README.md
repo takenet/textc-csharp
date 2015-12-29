@@ -14,7 +14,7 @@
 ## How it works
 
 
-**Textc** do the **tokenization** of a text input by looking for **matches** against a collection of **syntaxes** which are grouped in a **text processor**.
+**Textc** does the **tokenization** of text inputs by looking for **matches** in a collection of **syntaxes**, which are grouped in a **text processor**.
 The engine tries to parse the input using the defined token types in each syntax, which has a defined parsing direction.
 When there's more than one syntax match, the processing engine choses the best match by using a **scorer**.
 
