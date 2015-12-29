@@ -1,11 +1,12 @@
 ﻿using System.Threading.Tasks;
-using Xunit;
+using NUnit.Framework;
 
 namespace Takenet.Textc.UnitTests
 {
+    [TestFixture]
     public class TextProcessorTests
     {
-        [Fact]
+        [Test]
         public async Task ProcessAsync_ValidInput_CallsCommandProcessor()
         {
 
