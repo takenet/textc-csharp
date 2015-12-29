@@ -411,9 +411,6 @@ Reminders for today:
 
 ```
 
-
-Creating the text processor:
-
 ## TODO
 
 [x] Import code from private repository
