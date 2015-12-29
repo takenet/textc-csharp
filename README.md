@@ -4,6 +4,7 @@
 
 **Textc** is a natural language parser library that allows developers to build text-commands based applications.
 
+![TC](https://take-teamcity1.azurewebsites.net/app/rest/builds/buildType:(id:Textc_Master)/statusIcon)
 
 ## NuGet
 
@@ -13,22 +14,23 @@
 ## How it works
 
 
-**Textc** do the **tokenization** of a text input by cross applying it to a collection of **syntaxes**.
+**Textc** do the **tokenization** of a text input by looking for **matches** against a collection of **syntaxes** which are grouped in a **text processor**.
+The engine tries to parse the input using the defined token types in each syntax, which has a defined parsing direction.
 When there's more than one syntax match, the processing engine choses the best match by using a **scorer**.
 
-With the selected syntax, an **expression** is generated, which is submitted to a **command processor**. 
-The most common command processor implementation binds syntaxes to methods (or delegates) arguments, thought a conversion of the token type to the language (C#) type.
+With the selected syntax, an **expression** is generated with the input and the syntax, which is submitted to a **command processor**. 
+The most common command processor implementation binds expressions tokens to methods (or delegates) arguments, thought a conversion of the token type to the language (C#) type.
 
-The command processor can produce an output (like a method return value), which is handled by an **output processor**.
+Optionally, the command processor can produce an output (for instance, the bound method has a return value), which is handled by an **output processor**.
 
-## Context
+### Context
 
 Beside the text input, the engine can also use the **request context** to fulfill a syntax token requirement. 
-The context is a dictionary of name/value variables and its idea is to be like a natural conversation context. 
+The context is a dictionary of name-value variables and its idea is to be like a natural conversation context. 
 
-When you start a (natural language) conversation with someone, some moments you can omit parts of the sentences because its explicit in the context.
+When a person is in a (natural language) conversation at some moments he/she can omit parts of the sentences because its implicit in the conversation context.
 
-For instance, that this conversation:
+For instance:
 
 > John: What brand is your car?
 
@@ -38,10 +40,11 @@ For instance, that this conversation:
 
 > Paul: It's yellow.
 
-In the second question, John didn't need to specify that he was talking about the car, because it was explicit in the context (an hidden subject), but if you had a syntax definition for this sentence, you should specify the car "variable" to avoid collisions with other subjects.
+In the second question, John didn't need to specify that he was talking about the car, because it was implicit in the context (an hidden subject), but the real question was "Whats the color of your car?".
+The car "variable" didn't needed to be in the conversation input.
 This is the same idea of the Textc context.
 
-You can add something to the context thought the syntax declaration or in the command processing.
+It is possible to add something in the context thought the syntax declaration or in the command processing.
 
 ### CSDL
 
@@ -56,24 +59,24 @@ name:type(initializer)
 
 Where:
 
-* **name** - The name of the token to be extracted, which must be unique in each declaration. This value is used to store values in the context or to bind to method parameters. Optional.
-* **type** - The type of the token to be extracted. The library define some basic types, like `Word` and `Integer`, but the developer can define its own types. Mandatory.
-* **initializer** - The initialization date for the token type, which is used in specific ways accordingly to the type.  For instance, in the `Word` type, it is used to define the set of words that can be parsed by the token type. Optional.
+* **name** - The name of the token to be extracted, which must be unique in each statement. This value can be used in the binding with method parameters or to store the value in the context. *Optional*.
+* **type** - The type of the token to be extracted. The library define some basic types, like `Word` and `Integer`, but the developer can define its own types. *Mandatory*.
+* **initializer** - The initialization date for the token type, which is used in specific ways accordingly to the type.  For instance, in the `Word` type, it is used to define the set of words that can be parsed by the token type. In some token types with complex initialization values, this is presented in the JSON format. *Optional*.
 
-For instance, if we have a calculator that must accept commands like `sum 1 and 2` where `1` and `2` are variable values, the CSDL for this syntax is:
+For instance, if we have a calculator that must accept commands like `sum 1 and 2`, where `1` and `2` are variable values, the CSDL for this syntax is:
 
 ```
 command:Word(sum) num1:Integer conjunction:Word(and) num2:Integer
 ```
 
-We can simplify our syntax by omitting the name of tokens that we known that will not be used in the command execution, like some language constructs. 
+We can simplify our syntax by omitting the name of tokens that we known that will not be used in the command execution (will not be bind to a method parameter or stored in the context), like some language constructs. 
 In this case, the syntax will be:
 
 ```
 :Word(sum) num1:Integer :Word(and) num2:Integer
 ```
 
-We also can define optional tokens in the syntax, meaning that they can be present or not on the input, without changing the semantics of the text. 
+We also can define optional tokens in the syntax, meaning that they can be present or not in the input/context, without changing the semantics of the text. 
 To notate that, we must put a question mark (`?`) character after the type definition:
 
 ```
@@ -93,13 +96,13 @@ Now the `operation` variable is in the context and if next user input is just `1
 
 By default, the syntax parsing is done from left to right and a match can happen even if still is some text input to be consumed. 
 For instance, our previous syntax will match `sum 1 and 2 and 3 and 4`, but only the first two numbers will be considered.
-To avoid that, we can add boundaries to the syntax, like this:
+To avoid that, we can add boundaries to the syntax surrounding it with the `[]` characters like this:
 
 ```
 [operation+:Word(sum) num1:Integer :Word?(and) num2:Integer]
 ```
 
-We can also change the initial parsing direction of the syntax, by adding the circumflex (`^`) character in the start or the end of the syntax (in the start is not required, since by default the parsing is left to right).
+We can also change the initial parsing direction of the syntax, by adding an anchor, which is represented by the circumflex (`^`) character in the start or the end of the syntax (in the start is not required, since by default the parsing is left to right).
 To parse from the right to left, we do:
 
 ```
@@ -142,6 +145,7 @@ And you will have the value `olá mundo` assigned to the `text` token and the `en
 | ----------|-------------------------------------|---------------------|
 | LDWord    | A levenshtein distance text word. It parses any word with a default distance of 2 characters from the initialization values. | `Mispelled` |
 | Regex     | A text with an regex initializer. Note that this token type will consume all remaining input that matches the specified regex. | `Mycustom text`    |
+| RegexLong | A 64 bit number an regex initializer. It allows more flexible parsing rules. | `4582379237123`    |
 | RegexWord | A text word with an regex initializer. It allows more flexible parsing rules. | `custom-word-pattern`    |
 
 

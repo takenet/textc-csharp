@@ -2,10 +2,10 @@
 
 namespace Takenet.Textc.Types
 {
-    [TokenType(ShortName = "LongRegex")]
-    public class LongRegexTokenType : RegexTokenTypeBase<long>
+    [TokenType(ShortName = "RegexLong")]
+    public class RegexLongTokenType : RegexTokenTypeBase<long>
     {
-        public LongRegexTokenType(string name, bool isContextual, bool isOptional, bool invertParsing)
+        public RegexLongTokenType(string name, bool isContextual, bool isOptional, bool invertParsing)
             : base(name, isContextual, isOptional, invertParsing)
         {
         }

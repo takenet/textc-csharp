@@ -88,7 +88,7 @@
     <Compile Include="Types\IntegerTokenType.cs" />
     <Compile Include="Types\ITokenType.cs" />
     <Compile Include="Types\LevenshteinDistanceWordTokenType.cs" />
-    <Compile Include="Types\LongRegexTokenType.cs" />
+    <Compile Include="Types\RegexLongTokenType.cs" />
     <Compile Include="Types\LongTokenType.cs" />
     <Compile Include="Types\RegexTokenTypeBase.cs" />
     <Compile Include="Types\TextRegexTokenType.cs" />
