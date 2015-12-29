@@ -1,4 +1,4 @@
-# Text
+# Textc
 
 **Note: This is a work in progress and is subject to change without notice.**
 
@@ -7,7 +7,7 @@
 
 ## NuGet
 
-[**Takenet.Text**](https://www.nuget.org/packages/Takenet.Text)
+[**Takenet.Textc**](https://www.nuget.org/packages/Takenet.Textc)
 
 
 ## Concepts
