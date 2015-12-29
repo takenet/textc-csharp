@@ -113,11 +113,15 @@ And we can change the direction during the parsing, by annoting the token type w
 ```
 
 In this case, the parsing starts from the right and if there's a match of the `and` word, the parse of the input will continue from the left, with the first non-matched token (`operation` in this example).
-This is useful when you have `Text` token types in the beggining of the syntax. Imagine to match inputs like `translate oi mundo to english`, you need a syntax like:
+
+This is useful when you have `Text` token types (which are greedy) in the syntax. If you need to match inputs like `translate olá mundo to english`, you should have a syntax like this:
 
 ```
 [:Word?(translate) text:Text :Word~(to) language:Word(english,portuguese)]^
 ```
+
+And you will have the value `olá mundo` assigned to the `text` token and the `english` value to the `language` token.
+
 
 ### Basic token types
 
