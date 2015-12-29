@@ -234,3 +234,18 @@ Result: 10
 There's no match for the specified input
 
 ```
+
+
+## TODO
+
+[x] Import code from private repository
+
+[ ] Write new unit tests
+
+[ ] Better documentation
+
+[ ] Multiple culture support
+
+[ ] Language specific token types (Verb, subject, conjunction)
+
+[ ] Language specific common syntaxes repository
