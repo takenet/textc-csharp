@@ -15,18 +15,18 @@
 
 
 **Textc** does the **tokenization** of text inputs by looking for **matches** in a collection of **syntaxes**, which are grouped in a **text processor**.
-The engine tries to parse the input using the defined token types in each syntax, which has a defined parsing direction.
+The engine tries to parse the input using the defined token types in each syntax.
 When there's more than one syntax match, the processing engine choses the best match by using a **scorer**.
 
-With the selected syntax, an **expression** is generated with the input and the syntax, which is submitted to a **command processor**. 
-The most common command processor implementation binds expressions tokens to methods (or delegates) arguments, thought a conversion of the token type to the language (C#) type.
+With the selected syntax, an **expression** that holds the parsed tokens is generated, being submitted to a **command processor**. 
+The most common command processor implementation binds expressions tokens to (class/delegates) methods arguments, thought a conversion of the token type to the language (C#) type.
 
-Optionally, the command processor can produce an output (for instance, the bound method has a return value), which is handled by an **output processor**.
+Optionally, the command processor can produce an output (for instance, the bound method can have a return value), which is handled by an **output processor**.
 
 ### Context
 
 Beside the text input, the engine can also use the **request context** to fulfill a syntax token requirement. 
-The context is a dictionary of name-value variables and its idea is to be like a natural conversation context. 
+The context is a dictionary of name-value variables and its idea is to act like a *natural* conversation context. 
 
 When a person is in a (natural language) conversation at some moments he/she can omit parts of the sentences because its implicit in the conversation context.
 
@@ -40,18 +40,17 @@ For instance:
 
 > Paul: It's yellow.
 
-In the second question, John didn't need to specify that he was talking about the car, because it was implicit in the context (an hidden subject), but the real question was "Whats the color of your car?".
-The car "variable" didn't needed to be in the conversation input.
+In the second question, John didn't need to specify that he was talking about the car, because it was implicit in the context, and his real question was *Whats the color of your car?*.
+So the car "variable" didn't needed to be in the conversation input.
 This is the same idea of the Textc context.
 
-It is possible to add something in the context thought the syntax declaration or in the command processing.
+It is possible to add something in the context by marking a syntax token as **contextual** or during the command processing.
 
 ### CSDL
 
 The **Command Syntax Definition Language** is a notation that allows the definition of syntaxes in a convenient way.
 
 A CSDL statement is composed by one or more token declarations, each one specified in the following way:
-
 
 ```
 name:type(initializer)
@@ -88,10 +87,10 @@ In this case, the syntax can parse inputs like `sum 1 2`, but still `sum 1 and 2
 You can specify that a token value should be added to the context if the syntax is matched, by using the plus (`+`) character after the token name declaration (which in this case is mandatory), like this:
 
 ```
-operation+:Word(sum) num1:Integer :Word?(and) num2:Integer
+command+:Word(sum) num1:Integer :Word?(and) num2:Integer
 ```
 
-Now the `operation` variable is in the context and if next user input is just `1 and 2` or even `1 2`, this syntax will be matched.
+Now, if there's a match for this syntax, the `command` variable will be added to the context with the token value (`sum`) and if next user input is something like `1 and 2` or even `1 2`, this syntax will be matched. This kind of token is called **contextual**.
 
 
 By default, the syntax parsing is done from left to right and a match can happen even if still is some text input to be consumed. 
@@ -99,31 +98,31 @@ For instance, our previous syntax will match `sum 1 and 2 and 3 and 4`, but only
 To avoid that, we can add boundaries to the syntax surrounding it with the `[]` characters like this:
 
 ```
-[operation+:Word(sum) num1:Integer :Word?(and) num2:Integer]
+[command+:Word(sum) num1:Integer :Word?(and) num2:Integer]
 ```
 
 We can also change the initial parsing direction of the syntax, by adding an anchor, which is represented by the circumflex (`^`) character in the start or the end of the syntax (in the start is not required, since by default the parsing is left to right).
 To parse from the right to left, we do:
 
 ```
-[operation+:Word(sum) num1:Integer :Word?(and) num2:Integer]^
+[command+:Word(sum) num1:Integer :Word?(and) num2:Integer]^
 ```
 
 And we can change the direction during the parsing, by annoting the token type with a tilde (`~`) character, like this:
 
 ```
-[operation+:Word(sum) num1:Integer :Word?~(and) num2:Integer]^
+[command+:Word(sum) num1:Integer :Word?~(and) num2:Integer]^
 ```
 
-In this case, the parsing starts from the right and if there's a match of the `and` word, the parse of the input will continue from the left, with the first non-matched token (`operation` in this example).
+In this case, the parsing starts from the right and if there's a match of the `and` word, the parse of the input will continue from the left, with the first non-matched token (`command` in this example).
 
-This is useful when you have `Text` token types (which are greedy) in the syntax. If you need to match inputs like `translate ol· mundo to english`, you should have a syntax like this:
+This is useful when you have `Text` token types (which are greedy) in the syntax. If you need to match inputs like `translate ol√° mundo to english`, you should have a syntax like this:
 
 ```
 [:Word?(translate) text:Text :Word~(to) language:Word(english,portuguese)]^
 ```
 
-And you will have the value `ol· mundo` assigned to the `text` token and the `english` value to the `language` token.
+And you will have the value `ol√° mundo` assigned to the `text` token and the `english` value to the `language` token.
 
 
 ### Basic token types
@@ -413,14 +412,9 @@ Reminders for today:
 
 ## TODO
 
-[x] Import code from private repository
-
-[ ] Write new unit tests
-
-[ ] Better documentation
-
-[ ] Multiple culture support
-
-[ ] Language specific token types (Verb, subject, conjunction)
-
-[ ] Language specific common syntaxes repository
+- [x] Import code from private repository
+- [ ] Write new unit tests
+- [ ] Better documentation
+- [ ] Multiple culture support
+- [ ] Language specific token types (Verb, subject, conjunction)
+- [ ] Language specific common syntaxes repository
