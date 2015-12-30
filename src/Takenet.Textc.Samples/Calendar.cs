@@ -18,10 +18,11 @@ namespace Takenet.Textc.Samples
             _reminders = new List<Reminder>();
         }
 
-        public Task<Reminder> AddReminderAsync(string message, string when)
+        public Task<Reminder> AddReminderAsync(string message, string when, IRequestContext context)
         {            
             var reminder = new Reminder(message, when);
-            _reminders.Add(reminder);            
+            _reminders.Add(reminder);
+            context.Clear();
             return Task.FromResult(reminder);            
         }
 
@@ -40,10 +41,12 @@ namespace Takenet.Textc.Samples
         {
             // The calendar syntaxes, using some LDWords for input flexibility
             var addReminderSyntax = CsdlParser.Parse(
-                "^[:Word?(hey,ok) :LDWord?(calendar,agenda) :LDWord(remind) :Word?(me) :Word~(to,of) message:Text when:LDWord?(today,tomorrow,someday)]");
+                "^[:Word?(hey,ok) :LDWord?(calendar,agenda) :Word?(add,new,create) command:LDWord(remind,reminder) :Word?(me) :Word~(to,of) message:Text :Word?(for) when:LDWord?(today,tomorrow,someday)]");
+            var partialAddReminderSyntax = CsdlParser.Parse(
+                "^[:Word?(hey,ok) :LDWord?(calendar,agenda) :Word?(add,new,create) command+:LDWord(remind,reminder) :Word?(for,me) when+:LDWord?(today,tomorrow,someday)]");
             var getRemindersSyntax = CsdlParser.Parse(
                 "[when:LDWord?(today,tomorrow,someday) :LDWord(reminders)]");
-
+            
             // The output processors
             var addReminderOutputProcessor = new DelegateOutputProcessor<Reminder>((reminder, context) =>
             {
@@ -67,17 +70,25 @@ namespace Takenet.Textc.Samples
                     Console.WriteLine();
                 }
             });
-
+    
             // Creating a instance to be shared by all processors
             var calendar = new Calendar();
 
-            // The reflection processor
+            // The command processors
             var addRemiderCommandProcessor = new ReflectionCommandProcessor(
                 calendar,
                 nameof(AddReminderAsync),
                 true,
                 addReminderOutputProcessor,
                 addReminderSyntax);
+
+            var partialAddRemiderCommandProcessor = new DelegateCommandProcessor(
+                new Func<string, Task>((when) =>
+                {
+                    Console.Write($"What do you want to be reminded {when}?");
+                    return Task.FromResult(0);
+                }),
+                syntaxes: partialAddReminderSyntax);
 
             var getRemidersCommandProcessor = new ReflectionCommandProcessor(
                 calendar,
@@ -86,9 +97,11 @@ namespace Takenet.Textc.Samples
                 getRemindersOutputProcessor,
                 getRemindersSyntax);
 
+
             // Registering the processors
             var textProcessor = new TextProcessor();
             textProcessor.AddCommandProcessor(addRemiderCommandProcessor);
+            textProcessor.AddCommandProcessor(partialAddRemiderCommandProcessor);            
             textProcessor.AddCommandProcessor(getRemidersCommandProcessor);
 
             // Adding some pre-processors to normalize the input text

@@ -159,11 +159,11 @@ Creating the text processor:
 
 ```csharp
 // Fist, define the calculator methods
-Func<int, int, int> sumFunc = (a, b) => a + b;
-Func<int, int, int> subtractFunc = (a, b) => a - b;
-Func<int, int, int> multiplyFunc = (a, b) => a * b;
-Func<int, int, int> divideFunc = (a, b) => a / b;
-
+Func<int, int, Task<int>> sumFunc = (a, b) => Task.FromResult(a + b);
+Func<int, int, Task<int>> subtractFunc = (a, b) => Task.FromResult(a - b);
+Func<int, int, Task<int>> multiplyFunc = (a, b) => Task.FromResult(a * b);
+Func<int, int, Task<int>> divideFunc = (a, b) => Task.FromResult(a / b);
+            
 // After that, the syntaxes for all operations, using the CSDL parser:
                         
 // 1. Sum:            
@@ -194,26 +194,30 @@ var alternativeDivideSyntax = CsdlParser.Parse("a:Integer :Word(by) b:Integer");
 var outputProcessor = new DelegateOutputProcessor<int>((o, context) => Console.WriteLine($"Result: {o}"));
             
 // Now create the command processors, to bind the methods to the syntaxes
-var sumCommandProcessor = DelegateCommandProcessor.Create(
+var sumCommandProcessor = new DelegateCommandProcessor(
     sumFunc,
-    outputProcessor,
-    sumSyntax,
+    true,
+    outputProcessor,                
+    sumSyntax, 
     alternativeSumSyntax
     );
-var subtractCommandProcessor = DelegateCommandProcessor.Create(
+var subtractCommandProcessor = new DelegateCommandProcessor(
     subtractFunc,
+    true,
     outputProcessor,
     subtractSyntax,
     alternativeSubtractSyntax
     );
-var multiplyCommandProcessor = DelegateCommandProcessor.Create(
+var multiplyCommandProcessor = new DelegateCommandProcessor(
     multiplyFunc,
+    true,
     outputProcessor,
     multiplySyntax,
     alternativeMultiplySyntax
     );
-var divideCommandProcessor = DelegateCommandProcessor.Create(
+var divideCommandProcessor = new DelegateCommandProcessor(
     divideFunc,
+    true,
     outputProcessor,
     divideSyntax,
     alternativeDivideSyntax
@@ -284,10 +288,12 @@ Creating the text processor:
 
 // The calendar syntaxes, using some LDWords for input flexibility
 var addReminderSyntax = CsdlParser.Parse(
-    "^[:Word?(hey,ok) :LDWord?(calendar,agenda) :LDWord(remind) :Word?(me) :Word~(to,of) message:Text when:LDWord?(today,tomorrow,someday)]");
+    "^[:Word?(hey,ok) :LDWord?(calendar,agenda) :Word?(add,new,create) command:LDWord(remind,reminder) :Word?(me) :Word~(to,of) message:Text :Word?(for) when:LDWord?(today,tomorrow,someday)]");
+var partialAddReminderSyntax = CsdlParser.Parse(
+    "^[:Word?(hey,ok) :LDWord?(calendar,agenda) :Word?(add,new,create) command+:LDWord(remind,reminder) :Word?(for,me) when+:LDWord?(today,tomorrow,someday)]");
 var getRemindersSyntax = CsdlParser.Parse(
     "[when:LDWord?(today,tomorrow,someday) :LDWord(reminders)]");
-
+            
 // The output processors
 var addReminderOutputProcessor = new DelegateOutputProcessor<Reminder>((reminder, context) =>
 {
@@ -311,17 +317,25 @@ var getRemindersOutputProcessor = new DelegateOutputProcessor<IEnumerable<Remind
         Console.WriteLine();
     }
 });
-
+    
 // Creating a instance to be shared by all processors
 var calendar = new Calendar();
 
-// The reflection processor
+// The command processors
 var addRemiderCommandProcessor = new ReflectionCommandProcessor(
     calendar,
     nameof(AddReminderAsync),
     true,
     addReminderOutputProcessor,
     addReminderSyntax);
+
+var partialAddRemiderCommandProcessor = new DelegateCommandProcessor(
+    new Func<string, Task>((when) =>
+    {
+        Console.Write($"What do you want to be reminded {when}?");
+        return Task.FromResult(0);
+    }),
+    syntaxes: partialAddReminderSyntax);
 
 var getRemidersCommandProcessor = new ReflectionCommandProcessor(
     calendar,
@@ -330,9 +344,11 @@ var getRemidersCommandProcessor = new ReflectionCommandProcessor(
     getRemindersOutputProcessor,
     getRemindersSyntax);
 
+
 // Registering the processors
 var textProcessor = new TextProcessor();
 textProcessor.AddCommandProcessor(addRemiderCommandProcessor);
+textProcessor.AddCommandProcessor(partialAddRemiderCommandProcessor);            
 textProcessor.AddCommandProcessor(getRemidersCommandProcessor);
 
 // Adding some pre-processors to normalize the input text
@@ -341,25 +357,49 @@ textProcessor.AddTextPreProcessor(new ToLowerCasePreProcessor());
 
 ```
 
-The calendar class methods:
+The calendar class:
 
 ```csharp
-public Task<Reminder> AddReminderAsync(string message, string when)
-{            
-    var reminder = new Reminder(message, when);
-    _reminders.Add(reminder);            
-    return Task.FromResult(reminder);            
-}
-
-public Task<IEnumerable<Reminder>> GetRemindersAsync(string when)
+public class Calendar
 {
-    if (string.IsNullOrEmpty(when))
+    private readonly List<Reminder> _reminders;
+
+    public Calendar()
     {
-        return Task.FromResult<IEnumerable<Reminder>>(_reminders);
+        _reminders = new List<Reminder>();
     }
 
-    return Task.FromResult(
-        _reminders.Where(r => r.When.Equals(when, StringComparison.OrdinalIgnoreCase)));
+    public Task<Reminder> AddReminderAsync(string message, string when, IRequestContext context)
+    {            
+        var reminder = new Reminder(message, when);
+        _reminders.Add(reminder);
+        context.Clear();
+        return Task.FromResult(reminder);            
+    }
+
+    public Task<IEnumerable<Reminder>> GetRemindersAsync(string when)
+    {
+        if (string.IsNullOrEmpty(when))
+        {
+            return Task.FromResult<IEnumerable<Reminder>>(_reminders);
+        }
+
+        return Task.FromResult(
+            _reminders.Where(r => r.When.Equals(when, StringComparison.OrdinalIgnoreCase)));
+    }
+
+    public class Reminder
+    {
+        public Reminder(string message, string when)
+        {
+            Message = message;
+            When = when ?? "someday";
+        }
+
+        public string Message { get; }
+
+        public string When { get; }
+    }
 }
 
 ```
@@ -383,7 +423,7 @@ Results:
 
 ```
 > remind me to write some unit tests for the library
-Reminder 'write some unit tests for the library ' added successfully for 'someday'
+Reminder 'write some unit tests for the library' added successfully for 'someday'
 
 > calendar, remind to pay my bills today
 Reminder 'pay my bills' added successfully for 'today'
@@ -394,16 +434,29 @@ Reminder 'learn to write in english' added successfully for 'tomorrow'
 > remind   me  to   fix  my   keyboard
 Reminder 'fix my keyboard' added successfully for 'someday'
 
+> add reminder
+What do you want to be reminded ?
+> to drink a coffee
+Reminder 'drink a coffee' added successfully for 'someday'
+
+> remind me tomorrow
+What do you want to be reminded tomorrow?
+> to do the laundry
+Reminder 'do the laundry' added successfully for 'tomorrow'
+
 > reminders
 Reminders for someday:
 * write some unit tests for the library
 * fix my keyboard
+* drink a coffee
 
 Reminders for today:
 * pay my bills
 
 Reminders for tomorrow:
 * learn to write in english
+* do the laundry
+
 
 > todai reminders
 Reminders for today:

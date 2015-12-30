@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using Takenet.Textc.Csdl;
 using Takenet.Textc.Processors;
 
@@ -9,11 +10,11 @@ namespace Takenet.Textc.Samples
         public static ITextProcessor CreateTextProcessor()
         {
             // Fist, define the calculator methods
-            Func<int, int, int> sumFunc = (a, b) => a + b;
-            Func<int, int, int> subtractFunc = (a, b) => a - b;
-            Func<int, int, int> multiplyFunc = (a, b) => a * b;
-            Func<int, int, int> divideFunc = (a, b) => a / b;
-
+            Func<int, int, Task<int>> sumFunc = (a, b) => Task.FromResult(a + b);
+            Func<int, int, Task<int>> subtractFunc = (a, b) => Task.FromResult(a - b);
+            Func<int, int, Task<int>> multiplyFunc = (a, b) => Task.FromResult(a * b);
+            Func<int, int, Task<int>> divideFunc = (a, b) => Task.FromResult(a / b);
+            
             // After that, the syntaxes for all operations, using the CSDL parser:
                         
             // 1. Sum:            
@@ -44,26 +45,30 @@ namespace Takenet.Textc.Samples
             var outputProcessor = new DelegateOutputProcessor<int>((o, context) => Console.WriteLine($"Result: {o}"));
             
             // Now create the command processors, to bind the methods to the syntaxes
-            var sumCommandProcessor = DelegateCommandProcessor.Create(
+            var sumCommandProcessor = new DelegateCommandProcessor(
                 sumFunc,
-                outputProcessor,
-                sumSyntax,
+                true,
+                outputProcessor,                
+                sumSyntax, 
                 alternativeSumSyntax
                 );
-            var subtractCommandProcessor = DelegateCommandProcessor.Create(
+            var subtractCommandProcessor = new DelegateCommandProcessor(
                 subtractFunc,
+                true,
                 outputProcessor,
                 subtractSyntax,
                 alternativeSubtractSyntax
                 );
-            var multiplyCommandProcessor = DelegateCommandProcessor.Create(
+            var multiplyCommandProcessor = new DelegateCommandProcessor(
                 multiplyFunc,
+                true,
                 outputProcessor,
                 multiplySyntax,
                 alternativeMultiplySyntax
                 );
-            var divideCommandProcessor = DelegateCommandProcessor.Create(
+            var divideCommandProcessor = new DelegateCommandProcessor(
                 divideFunc,
+                true,
                 outputProcessor,
                 divideSyntax,
                 alternativeDivideSyntax
