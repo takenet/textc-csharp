@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using Takenet.Textc.PreProcessors;
@@ -63,6 +64,7 @@ namespace Takenet.Textc
 
         public async Task ProcessAsync(string inputText, IRequestContext context)
         {
+            if (inputText == null) throw new ArgumentNullException(nameof(inputText));
             if (string.IsNullOrWhiteSpace(inputText))
             {
                 throw new ArgumentException("The input string must have a value", nameof(inputText));
@@ -81,7 +83,7 @@ namespace Takenet.Textc
 
             foreach (var commandProcessor in CommandProcessors)
             {
-                foreach (var syntax in commandProcessor.Syntaxes)
+                foreach (var syntax in commandProcessor.Syntaxes.Where(s => s.Culture.Equals(context.Culture) || s.Culture.Equals(CultureInfo.InvariantCulture)))
                 {
                     textCursor.RightToLeftParsing = syntax.RightToLeftParsing;
                     Expression expression;

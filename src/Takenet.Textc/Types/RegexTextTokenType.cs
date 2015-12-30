@@ -2,10 +2,10 @@
 
 namespace Takenet.Textc.Types
 {
-    [TokenType(ShortName = "TextRegex")]
-    public class TextRegexTokenType : RegexTokenTypeBase<string>
+    [TokenType(ShortName = "RegexText")]
+    public class RegexTextTokenType : RegexTokenTypeBase<string>
     {
-        public TextRegexTokenType(string name, bool isContextual, bool isOptional, bool invertParsing)
+        public RegexTextTokenType(string name, bool isContextual, bool isOptional, bool invertParsing)
             : base(name, isContextual, isOptional, invertParsing)
         {
         }

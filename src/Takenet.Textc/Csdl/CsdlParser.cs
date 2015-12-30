@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Reflection;
 using Takenet.Textc.Metadata;
@@ -122,8 +123,19 @@ namespace Takenet.Textc.Csdl
         /// <returns></returns>
         public static Syntax Parse(string syntaxPattern)
         {
+            return Parse(syntaxPattern, CultureInfo.InvariantCulture);            
+        }
+
+        /// <summary>
+        /// Parses a CSDL string into a instance of <see cref="Syntax" />.
+        /// </summary>
+        /// <param name="syntaxPattern">The syntax pattern.</param>
+        /// <param name="culture">The syntax culture.</param>
+        /// <returns></returns>
+        public static Syntax Parse(string syntaxPattern, CultureInfo culture)
+        {
             var syntax = new CsdlSyntax(syntaxPattern);
-            return syntax.ToSyntax(TokenTypeDictionary);
+            return syntax.GetSyntax(TokenTypeDictionary, culture);
         }
 
         /// <summary>

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 
 namespace Takenet.Textc
 {
@@ -9,11 +10,21 @@ namespace Takenet.Textc
     public class RequestContext : IRequestContext
     {
         public RequestContext()
+            : this(CultureInfo.InvariantCulture)
         {
+            
+        }
+
+        public RequestContext(CultureInfo culture)
+        {
+            if (culture == null) throw new ArgumentNullException(nameof(culture));
+            Culture = culture;
             ContextVariableDictionary = new Dictionary<string, object>();
         }
 
         protected IDictionary<string, object> ContextVariableDictionary { get; }
+
+        public CultureInfo Culture { get; }
 
         public virtual void SetVariable(string name, object value)
         {

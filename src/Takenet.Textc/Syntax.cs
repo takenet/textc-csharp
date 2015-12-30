@@ -1,4 +1,6 @@
-﻿using System.Text;
+﻿using System;
+using System.Globalization;
+using System.Text;
 using Takenet.Textc.Types;
 
 namespace Takenet.Textc
@@ -12,13 +14,19 @@ namespace Takenet.Textc
         /// Initializes a new instance of the <see cref="Syntax" /> class.
         /// </summary>
         /// <param name="tokenTypes">The token types.</param>
-        /// <param name="rightToLeftParsing">if set to <c>true</c> [right to left parsing].</param>
-        /// <param name="perfectMatchOnly">if set to <c>true</c> [perfect match only].</param>
-        public Syntax(ITokenType[] tokenTypes, bool rightToLeftParsing, bool perfectMatchOnly)
+        /// <param name="rightToLeftParsing">Indicates if the parsing should be done from the right to the left direction..</param>
+        /// <param name="perfectMatchOnly">Indicates if the syntax requires that all input should be consumed in order to satisfy it.</param>
+        /// <param name="culture">The syntax culture.</param>
+        public Syntax(ITokenType[] tokenTypes, bool rightToLeftParsing, bool perfectMatchOnly, CultureInfo culture)
         {
+            if (tokenTypes == null) throw new ArgumentNullException(nameof(tokenTypes));
+            if (tokenTypes.Length == 0) throw new ArgumentException("A syntax must contains at least one token type", nameof(tokenTypes));
+            if (culture == null) throw new ArgumentNullException(nameof(culture));
+
             TokenTypes = tokenTypes;
             RightToLeftParsing = rightToLeftParsing;
             PerfectMatchOnly = perfectMatchOnly;
+            Culture = culture;
         }
 
         /// <summary>
@@ -29,13 +37,17 @@ namespace Takenet.Textc
         /// <summary>
         /// Indicates if the parsing should be done from the right to the left direction.
         /// </summary>
-        public bool RightToLeftParsing { get; private set; }
+        public bool RightToLeftParsing { get; }
 
         /// <summary>
-        /// Indicates if the syntax demands that
-        /// all input should be consumed in order to satisfy it.
+        /// Indicates if the syntax requires that all input should be consumed in order to satisfy it.
         /// </summary>
-        public bool PerfectMatchOnly { get; private set; }
+        public bool PerfectMatchOnly { get; }
+
+        /// <summary>
+        /// The syntax culture. If the culture is <see cref="CultureInfo.InvariantCulture"/>, it will be valid to contexts of any culture.
+        /// </summary>        
+        public CultureInfo Culture { get; }
 
         /// <summary>
         /// Returns a <see cref="System.String" /> that represents this instance.

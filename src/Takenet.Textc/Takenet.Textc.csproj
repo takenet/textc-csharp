@@ -91,7 +91,8 @@
     <Compile Include="Types\RegexLongTokenType.cs" />
     <Compile Include="Types\LongTokenType.cs" />
     <Compile Include="Types\RegexTokenTypeBase.cs" />
-    <Compile Include="Types\TextRegexTokenType.cs" />
+    <Compile Include="Types\SoundexWordTokenType.cs" />
+    <Compile Include="Types\RegexTextTokenType.cs" />
     <Compile Include="Types\TextTokenType.cs" />
     <Compile Include="Types\TokenType.cs" />
     <Compile Include="Types\ValueTokenTypeBase.cs" />

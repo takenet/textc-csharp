@@ -1,4 +1,6 @@
-﻿namespace Takenet.Textc
+﻿using System.Globalization;
+
+namespace Takenet.Textc
 {
     /// <summary>
     /// Represents a common context that can be used across multiple input commands processing.
@@ -6,6 +8,14 @@
     /// </summary>
     public interface IRequestContext
     {
+        /// <summary>
+        /// Gets the context culture.
+        /// </summary>
+        /// <value>
+        /// The culture.
+        /// </value>
+        CultureInfo Culture { get; }
+
         /// <summary>
         /// Sets a variable value.
         /// </summary>

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using Takenet.Textc.Types;
@@ -93,9 +94,10 @@ namespace Takenet.Textc.Csdl
         /// Converts to a <see cref="Syntax" /> instance, using the provided token types.
         /// </summary>
         /// <param name="tokenTypeTypeDictionary">The token type dictionary.</param>
+        /// <param name="culture">The syntax culture.</param>
         /// <returns></returns>
         /// <exception cref="System.ArgumentException">syntaxPattern</exception>
-        public Syntax ToSyntax(IDictionary<string, Type> tokenTypeTypeDictionary)
+        internal Syntax GetSyntax(IDictionary<string, Type> tokenTypeTypeDictionary, CultureInfo culture)
         {
             var tokenTypes = new ITokenType[Tokens.Count()];
 
@@ -112,7 +114,7 @@ namespace Takenet.Textc.Csdl
                 tokenTypes[i] = syntaxToken.ToTokenType(tokenTypeTypeDictionary);
             }
 
-            var syntax = new Syntax(tokenTypes, RightToLeftParsing, PerfectMatchOnly);
+            var syntax = new Syntax(tokenTypes, RightToLeftParsing, PerfectMatchOnly, culture);
             return syntax;
         }
 

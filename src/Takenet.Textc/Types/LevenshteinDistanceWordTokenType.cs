@@ -24,7 +24,7 @@ namespace Takenet.Textc.Types
 
             foreach (var validValue in GetValidValues(context))
             {
-                var distance = ComputeLevenshteinDistance(value, validValue);
+                var distance = LevenshteinDistance(value, validValue);
 
                 if (distance >= 0 &&
                     distance <= MaxDistance &&
@@ -51,13 +51,13 @@ namespace Takenet.Textc.Types
         /// <param name="s">The first of the two strings.</param>
         /// <param name="t">The second of the two strings.</param>
         /// <returns>The Levenshtein cost.</returns>
-        private static int ComputeLevenshteinDistance(string s, string t)
+        /// Source: http://rosettacode.org/wiki/Levenshtein_distance#C.23
+        static int LevenshteinDistance(string s, string t)
         {
-            var n = s.Length;
-            var m = t.Length;
-            var d = new int[n + 1, m + 1];
+            int n = s.Length;
+            int m = t.Length;
+            int[,] d = new int[n + 1, m + 1];
 
-            // Step 1
             if (n == 0)
             {
                 return m;
@@ -68,31 +68,21 @@ namespace Takenet.Textc.Types
                 return n;
             }
 
-            // Step 2
-            for (var i = 0; i <= n; d[i, 0] = i++)
-            {
-            }
+            for (int i = 0; i <= n; i++)
+                d[i, 0] = i;
+            for (int j = 0; j <= m; j++)
+                d[0, j] = j;
 
-            for (var j = 0; j <= m; d[0, j] = j++)
-            {
-            }
-
-            // Step 3
-            for (var i = 1; i <= n; i++)
-            {
-                //Step 4
-                for (var j = 1; j <= m; j++)
-                {
-                    // Step 5
-                    var cost = t[j - 1] == s[i - 1] ? 0 : 1;
-
-                    // Step 6
-                    d[i, j] = Math.Min(
-                        Math.Min(d[i - 1, j] + 1, d[i, j - 1] + 1),
-                        d[i - 1, j - 1] + cost);
-                }
-            }
-            // Step 7
+            for (int j = 1; j <= m; j++)
+                for (int i = 1; i <= n; i++)
+                    if (s[i - 1] == t[j - 1])
+                        d[i, j] = d[i - 1, j - 1];  //no operation
+                    else
+                        d[i, j] = Math.Min(Math.Min(
+                            d[i - 1, j] + 1,    //a deletion
+                            d[i, j - 1] + 1),   //an insertion
+                            d[i - 1, j - 1] + 1 //a substitution
+                            );
             return d[n, m];
         }
     }
