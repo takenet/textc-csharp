@@ -439,6 +439,9 @@ What do you want to be reminded ?
 > to drink a coffee
 Reminder 'drink a coffee' added successfully for 'someday'
 
+> to drink a beer
+There's no match for the specified input
+
 > remind me tomorrow
 What do you want to be reminded tomorrow?
 > to do the laundry
