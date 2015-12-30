@@ -7,10 +7,10 @@ using Takenet.Textc.Metadata;
 
 namespace Takenet.Textc.Types
 {
-    [TokenType(ShortName = "MWord")]
-    public class MetaphoneWordTokenType : ValueTokenTypeBase<string>
+    [TokenType(ShortName = "DMWord")]
+    public class DoubleMetaphoneWordTokenType : ValueTokenTypeBase<string>
     {
-        public MetaphoneWordTokenType(string name, bool isContextual, bool isOptional, bool invertParsing)
+        public DoubleMetaphoneWordTokenType(string name, bool isContextual, bool isOptional, bool invertParsing)
             : base(name, isContextual, isOptional, invertParsing)
         {
 

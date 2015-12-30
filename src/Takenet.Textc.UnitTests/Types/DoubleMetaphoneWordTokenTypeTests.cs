@@ -11,20 +11,20 @@ using Takenet.Textc.Types;
 namespace Takenet.Textc.UnitTests.Types
 {
     [TestFixture]
-    public class SoundexWordTokenTypeTests : TokenTypeTestsBase<SoundexWordTokenType>
+    public class DoubleMetaphoneWordTokenTypeTests : TokenTypeTestsBase<DoubleMetaphoneWordTokenType>
     {
-        protected override SoundexWordTokenType GetTarget()
+        protected override DoubleMetaphoneWordTokenType GetTarget()
         {
-            return new SoundexWordTokenType(Name, IsContextual, IsOptional, InvertParsing);
+            return new DoubleMetaphoneWordTokenType(Name, IsContextual, IsOptional, InvertParsing);
         }
 
         [Test]
-        public void TryParseAValidSoundexWordShouldReturnTrue()
+        public void TryParseAValidMetaphoneWordShouldReturnTrue()
         {
             // Arrange
             var target = GetTarget();
-            var word = "ezampul";
-            var approximateWord = "ezampul";
+            var word = "Johnathan";
+            var approximateWord = "Jonathan";
             target.ValidValues = new[] { word };
             var cursor = GetCursor(approximateWord);
 
@@ -38,12 +38,12 @@ namespace Takenet.Textc.UnitTests.Types
         }
 
         [Test]
-        public void TryParseAInvalidSoundexWordShouldReturnFalse()
+        public void TryParseAInvalidMetaphoneWordShouldReturnFalse()
         {
             // Arrange
             var target = GetTarget();
-            var word = "Catherine";
-            var approximateWord = "Katherine";
+            var word = "John";
+            var approximateWord = "Smith";
             target.ValidValues = new[] { word };            
             var cursor = GetCursor(approximateWord);
 
