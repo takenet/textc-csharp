@@ -143,10 +143,11 @@ And you will have the value `olá mundo` assigned to the `text` token and the `e
 | Name      | Description                         | Sample values       |
 | ----------|-------------------------------------|---------------------|
 | LDWord    | A [levenshtein distance](https://en.wikipedia.org/wiki/Levenshtein_distance) word. It parses any word with a default distance of 2 characters from the initialization values. | `Mispelled` for `Misspelled` |
+| MWord     | A [metaphone](https://en.wikipedia.org/wiki/Metaphone) word. It matches if the generated metaphone code for the input is the same for any of the initialization values. | `Ekzampul` for `Example` |
 | RegexText | A text with an regex initializer. Note that this token type will consume all remaining input that matches the specified regex. | `Mycustom text`    |
 | RegexLong | A 64 bit number an regex initializer. It allows more flexible parsing rules. | `4582379237123`    |
 | RegexWord | A text word with an regex initializer. It allows more flexible parsing rules. | `custom-word-pattern`    |
-| SoundexWord | A [soundex](https://en.wikipedia.org/wiki/Soundex) word. It matches if the generated soundex code for the input is the same for any of the initialization values. | `Ekzampul` for `Example` |
+| SWord     | A [soundex](https://en.wikipedia.org/wiki/Soundex) word. It matches if the generated soundex code for the input is the same for any of the initialization values. | `Ekzampul` for `Example` |
 
 
 ## Samples

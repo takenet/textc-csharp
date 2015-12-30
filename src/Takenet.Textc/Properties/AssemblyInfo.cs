@@ -1,4 +1,5 @@
 ﻿using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using Takenet.Textc.Metadata;
 
@@ -39,3 +40,4 @@ using Takenet.Textc.Metadata;
 [assembly: AssemblyVersion("1.0.0.0")]
 [assembly: AssemblyFileVersion("1.0.0.0")]
 [assembly: TokenTypeLibrary]
+[assembly: InternalsVisibleTo("Takenet.Textc.UnitTests")]

@@ -11,7 +11,7 @@ namespace Takenet.Textc.UnitTests
         private static readonly Fixture _fixture = new Fixture();
 
         [Test]
-        public void SetVariable_ValidVariableValue_StoresValue()
+        public void SetAVariableShouldStoreTheValue()
         {
             // Arrange
             var requestContext = _fixture.Create<RequestContext>();
@@ -26,7 +26,7 @@ namespace Takenet.Textc.UnitTests
         }
 
         [Test]
-        public void SetVariable_NullVariableValue_RemovesValue()
+        public void SetAVariableWithNullShouldNotThrowAnException()
         {
             // Arrange
             var requestContext = _fixture.Create<RequestContext>();
@@ -40,7 +40,7 @@ namespace Takenet.Textc.UnitTests
         }
 
         [Test]
-        public void SetVariable_NullVariableName_ThrowsArgumentNullException()
+        public void SetAVariableWithNullNameShouldThrowArgumentNullException()
         {
             // Arrange            
             var requestContext = _fixture.Create<RequestContext>();            
@@ -53,7 +53,7 @@ namespace Takenet.Textc.UnitTests
         }
 
         [Test]
-        public void RemoveVariable_ExistingVariable_RemovesValue()
+        public void RemoveExistingVariableShouldRemoveTheValue()
         {
             // Arrange            
             var requestContext = _fixture.Create<RequestContext>();
@@ -70,7 +70,7 @@ namespace Takenet.Textc.UnitTests
         }
 
         [Test]
-        public void RemoveVariable_NonExistingVariable_DoNotThrowException()
+        public void RemoveANonExistingVariableShouldNotThrowAnException()
         {
             // Arrange
             var requestContext = _fixture.Create<RequestContext>();
@@ -81,7 +81,7 @@ namespace Takenet.Textc.UnitTests
         }
 
         [Test]
-        public void Clear_ExistingVariables_RemoveValues()
+        public void ClearExistingVariablesShouldRemoveTheValues()
         {
             // Arrange
             var requestContext = _fixture.Create<RequestContext>();

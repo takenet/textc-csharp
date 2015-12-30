@@ -8,7 +8,7 @@ using Takenet.Textc.Metadata;
 
 namespace Takenet.Textc.Types
 {
-    [TokenType(ShortName = "SoundexWord")]
+    [TokenType(ShortName = "SWord")]
     public class SoundexWordTokenType  : ValueTokenTypeBase<string>
     {
         public SoundexWordTokenType(string name, bool isContextual, bool isOptional, bool invertParsing)

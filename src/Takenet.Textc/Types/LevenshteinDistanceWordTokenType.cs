@@ -52,7 +52,7 @@ namespace Takenet.Textc.Types
         /// <param name="t">The second of the two strings.</param>
         /// <returns>The Levenshtein cost.</returns>
         /// Source: http://rosettacode.org/wiki/Levenshtein_distance#C.23
-        static int LevenshteinDistance(string s, string t)
+        private static int LevenshteinDistance(string s, string t)
         {
             int n = s.Length;
             int m = t.Length;
