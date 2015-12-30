@@ -6,9 +6,9 @@
 
 ![TC](https://take-teamcity1.azurewebsites.net/app/rest/builds/buildType:(id:Textc_Master)/statusIcon)
 
-## NuGet
+<a href="https://www.nuget.org/packages/Takenet.Textc" rel="NuHet">![NuGet](https://img.shields.io/nuget/dt/Takenet.Textc.svg)</a>
 
-[**Takenet.Textc**](https://www.nuget.org/packages/Takenet.Textc)
+<a href="https://www.nuget.org/packages/Takenet.Textc" rel="NuHet">![NuGet](https://img.shields.io/nuget/v/Takenet.Textc.svg)</a>
 
 
 ## How it works
