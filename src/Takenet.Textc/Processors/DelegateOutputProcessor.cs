@@ -15,6 +15,7 @@ namespace Takenet.Textc.Processors
 
         public DelegateOutputProcessor(Func<T, IRequestContext, Task> func)
         {
+            if (func == null) throw new ArgumentNullException(nameof(func));
             _func = func;
         }
 

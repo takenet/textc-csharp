@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Takenet.Textc.Processors;
 
@@ -27,8 +28,10 @@ namespace Takenet.Textc
 
         public ICommandProcessor Processor { get; }
 
-        public async Task SubmitAsync()
+        public async Task SubmitAsync(CancellationToken cancellationToken)
         {
+            cancellationToken.ThrowIfCancellationRequested();
+
             if (Expression.Context != null)
             {
                 // Apply the contextual tokens
@@ -42,7 +45,7 @@ namespace Takenet.Textc
                 }
             }
 
-            var task = Processor.ProcessAsync(Expression);
+            var task = Processor.ProcessAsync(Expression, cancellationToken);
             await task.ConfigureAwait(false);
 
             if (Processor.OutputProcessor != null &&

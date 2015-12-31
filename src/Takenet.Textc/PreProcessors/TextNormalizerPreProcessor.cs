@@ -1,27 +1,28 @@
 ﻿using System.Globalization;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Takenet.Textc.PreProcessors
 {
-    public class TextNormalizerPreProcessor : ITextPreProcessor
+    public class TextNormalizerPreprocessor : ITextPreprocessor
     {
         private static readonly Regex SpecialCharsInNumberExpression = new Regex(@"((?<=\d)[^\w ]+(?=\d))", RegexOptions.Compiled);
         private static readonly Regex SpecialCharsExpression = new Regex(@"[^\w]+", RegexOptions.Compiled);
         private static readonly Regex MultipleSpacesExpression = new Regex(@"\s+", RegexOptions.Compiled);
 
-        public TextNormalizerPreProcessor()
+        public TextNormalizerPreprocessor()
             : this(0)
         {
         }
 
-        public TextNormalizerPreProcessor(int priority)
+        public TextNormalizerPreprocessor(int priority)
         {
             Priority = priority;
         }
 
-        public Task<string> ProcessTextAsync(string text, IRequestContext context)
+        public Task<string> ProcessTextAsync(string text, IRequestContext context, CancellationToken cancellationToken)
         {
             var normalizedText = text.Normalize(NormalizationForm.FormD);
             var stringBuilder = new StringBuilder();

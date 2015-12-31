@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Threading;
 using System.Threading.Tasks;
 using Takenet.Textc.Csdl;
 using Takenet.Textc.Processors;
@@ -48,7 +49,7 @@ namespace Takenet.Textc.Samples
 
                 try
                 {
-                    await textProcessor.ProcessAsync(inputText, context);
+                    await textProcessor.ProcessAsync(inputText, context, CancellationToken.None);
                 }
                 catch (MatchNotFoundException)
                 {

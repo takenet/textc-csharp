@@ -76,10 +76,10 @@ namespace Takenet.Textc.Samples
 
             // Finally, create the text processor and register all command processors
             var textProcessor = new TextProcessor();
-            textProcessor.AddCommandProcessor(sumCommandProcessor);
-            textProcessor.AddCommandProcessor(subtractCommandProcessor);
-            textProcessor.AddCommandProcessor(multiplyCommandProcessor);
-            textProcessor.AddCommandProcessor(divideCommandProcessor);
+            textProcessor.CommandProcessors.Add(sumCommandProcessor);
+            textProcessor.CommandProcessors.Add(subtractCommandProcessor);
+            textProcessor.CommandProcessors.Add(multiplyCommandProcessor);
+            textProcessor.CommandProcessors.Add(divideCommandProcessor);
 
             return textProcessor;
         }

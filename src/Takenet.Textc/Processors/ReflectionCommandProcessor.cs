@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Reflection;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Takenet.Textc.Processors
@@ -32,8 +33,8 @@ namespace Takenet.Textc.Processors
             {
                 throw new ArgumentNullException(nameof(syntaxes));
             }
-            
-            _processor = processor;            
+
+            _processor = processor;
             _allowNullOnNullableParameters = allowNullOnNullableParameters;
             Syntaxes = syntaxes;
 
@@ -66,18 +67,19 @@ namespace Takenet.Textc.Processors
 
         public IOutputProcessor OutputProcessor { get; }
 
-        public Task ProcessAsync(Expression expression)
+        public Task ProcessAsync(Expression expression, CancellationToken cancellationToken)
         {
             var parameters = TypeUtil.GetParametersFromExpression(
                 expression,
                 _methodParameters,
-                _allowNullOnNullableParameters);
+                _allowNullOnNullableParameters,
+                cancellationToken);
 
-            Task commandOutput;
+            Task commandOutputTask;
 
             try
             {
-                commandOutput = (Task) _method.Invoke(
+                commandOutputTask = (Task)_method.Invoke(
                     _processor,
                     parameters);
             }
@@ -86,7 +88,7 @@ namespace Takenet.Textc.Processors
                 throw ex.InnerException;
             }
 
-            return commandOutput;
+            return commandOutputTask;
         }
     }
 }

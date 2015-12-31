@@ -3,7 +3,7 @@
     /// <summary>
     /// Occurs when there is no match available for the provided input.
     /// </summary>
-    public class MatchNotFoundException : SmartTextException
+    public class MatchNotFoundException : TextcException
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="MatchNotFoundException" /> class.

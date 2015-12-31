@@ -1,20 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Takenet.Textc.PreProcessors
 {
-    public class DictionaryReplacerPreProcessor : ITextPreProcessor
+    public class DictionaryReplacerPreprocessor : ITextPreprocessor
     {
         public IDictionary<Regex, string> ReplacementDictionary { get; }
 
-        public DictionaryReplacerPreProcessor(IDictionary<string, string> replacementDictionary)
+        public DictionaryReplacerPreprocessor(IDictionary<string, string> replacementDictionary)
             : this(replacementDictionary, 0)
         {
         }
 
-        public DictionaryReplacerPreProcessor(IDictionary<string, string> replacementDictionary, int priority)
+        public DictionaryReplacerPreprocessor(IDictionary<string, string> replacementDictionary, int priority)
         {
             Priority = priority;
             if (replacementDictionary == null)
@@ -31,7 +32,7 @@ namespace Takenet.Textc.PreProcessors
             }
         }
 
-        public Task<string> ProcessTextAsync(string text, IRequestContext context)
+        public Task<string> ProcessTextAsync(string text, IRequestContext context, CancellationToken cancellationToken)
         {
             var parsedText = text;
 

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Takenet.Textc.PreProcessors;
 using Takenet.Textc.Processors;
@@ -14,13 +15,8 @@ namespace Takenet.Textc
     /// </summary>
     public class TextProcessor : ITextProcessor
     {
-        protected ICollection<ICommandProcessor> CommandProcessors { get; }
-
-        protected ICollection<ITextPreProcessor> TextPreProcessors { get; }
-
-        protected ISyntaxParser SyntaxParser { get; }
-
-        protected IExpressionScorer ExpressionScorer { get; }
+        private readonly List<ICommandProcessor> _commandProcessors;
+        private readonly List<ITextPreprocessor> _textPreprocessors;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TextProcessor" /> class.
@@ -35,78 +31,82 @@ namespace Takenet.Textc
         /// </summary>
         public TextProcessor(ISyntaxParser syntaxParser, IExpressionScorer expressionScorer)
         {
-            if (syntaxParser == null)
-            {
-                throw new ArgumentNullException(nameof(syntaxParser));
-            }
-            SyntaxParser = syntaxParser;
+            if (syntaxParser == null) throw new ArgumentNullException(nameof(syntaxParser));
+            if (expressionScorer == null) throw new ArgumentNullException(nameof(expressionScorer));
 
-
-            if (expressionScorer == null)
-            {
-                throw new ArgumentNullException(nameof(expressionScorer));
-            }
+            SyntaxParser = syntaxParser;                        
             ExpressionScorer = expressionScorer;
 
-            CommandProcessors = new List<ICommandProcessor>();
-            TextPreProcessors = new List<ITextPreProcessor>();
+            _commandProcessors = new List<ICommandProcessor>();
+            _textPreprocessors = new List<ITextPreprocessor>();
         }
 
-        public void AddTextPreProcessor(ITextPreProcessor textPreProcessor)
-        {
-            TextPreProcessors.Add(textPreProcessor);
-        }
+        public ICollection<ICommandProcessor> CommandProcessors => _commandProcessors;
 
-        public void AddCommandProcessor(ICommandProcessor commandProcessor)
-        {
-            CommandProcessors.Add(commandProcessor);
-        }
+        public ICollection<ITextPreprocessor> TextPreprocessors => _textPreprocessors;
 
-        public async Task ProcessAsync(string inputText, IRequestContext context)
+        protected ISyntaxParser SyntaxParser { get; }
+
+        protected IExpressionScorer ExpressionScorer { get; }
+
+        public async Task ProcessAsync(string inputText, IRequestContext context, CancellationToken cancellationToken)
         {
-            if (inputText == null) throw new ArgumentNullException(nameof(inputText));
+            if (inputText == null) throw new ArgumentNullException(nameof(inputText));            
             if (string.IsNullOrWhiteSpace(inputText))
             {
                 throw new ArgumentException("The input string must have a value", nameof(inputText));
             }
+            if (context == null) throw new ArgumentNullException(nameof(context));
 
             var processedInputText = inputText;
 
-            foreach (var preprocessor in TextPreProcessors.OrderBy(p => p.Priority))
+            var textPreprocessors = new List<ITextPreprocessor>(TextPreprocessors).OrderBy(p => p.Priority);
+            foreach (var preprocessor in textPreprocessors)
             {
+                cancellationToken.ThrowIfCancellationRequested();
+
                 processedInputText =
-                    await preprocessor.ProcessTextAsync(processedInputText, context).ConfigureAwait(false);
+                    await preprocessor.ProcessTextAsync(processedInputText, context, cancellationToken).ConfigureAwait(false);
             }
 
-            var parsedInputList = new List<ParsedInput>();
+            var parsedInputs = new List<ParsedInput>();
             var textCursor = new TextCursor(processedInputText, context);
 
-            foreach (var commandProcessor in CommandProcessors)
+            // Makes a copy of the list
+            var commandProcessors = new List<ICommandProcessor>(_commandProcessors);
+            foreach (var commandProcessor in commandProcessors)
             {
-                foreach (var syntax in commandProcessor.Syntaxes.Where(s => s.Culture.Equals(context.Culture) || s.Culture.Equals(CultureInfo.InvariantCulture)))
+                // Gets all the syntaxes that are of the same culture of the context or are culture invariant
+                var syntaxes =
+                    commandProcessor.Syntaxes.Where(
+                        s => s.Culture.Equals(context.Culture) || s.Culture.Equals(CultureInfo.InvariantCulture));
+
+                foreach (var syntax in syntaxes)
                 {
+                    cancellationToken.ThrowIfCancellationRequested();
+
                     textCursor.RightToLeftParsing = syntax.RightToLeftParsing;
-                    Expression expression;
                     textCursor.Reset();
 
+                    Expression expression;                    
                     if (SyntaxParser.TryParse(textCursor, syntax, context, out expression))
                     {
                         var commandParsedQuery = new ParsedInput(expression, commandProcessor);
-                        parsedInputList.Add(commandParsedQuery);
+                        parsedInputs.Add(commandParsedQuery);
                         break;
                     }
                 }
             }
 
             // Gets the more relevant expression accordingly to the expression scorer
-            var parsedInput = parsedInputList
+            var parsedInput = parsedInputs
                 .OrderByDescending(e => ExpressionScorer.GetScore(e.Expression))
                 .ThenByDescending(e => e.Expression.Tokens.Count(t => t != null))
                 .FirstOrDefault();
 
             if (parsedInput != null)
             {
-                await parsedInput.SubmitAsync().ConfigureAwait(false);
+                await parsedInput.SubmitAsync(cancellationToken).ConfigureAwait(false);
             }
             else
             {

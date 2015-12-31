@@ -81,7 +81,7 @@
     <Compile Include="Scorers\ExpressionScorer.cs" />
     <Compile Include="Scorers\IExpressionScorer.cs" />
     <Compile Include="Scorers\MaxMatchesExpressionScorer.cs" />
-    <Compile Include="SmartTextException.cs" />
+    <Compile Include="TextcException.cs" />
     <Compile Include="Syntax.cs" />
     <Compile Include="SyntaxParser.cs" />
     <Compile Include="Types\DecimalTokenType.cs" />

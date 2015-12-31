@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Threading;
+using System.Threading.Tasks;
 
 namespace Takenet.Textc.Processors
 {
@@ -16,6 +17,6 @@ namespace Takenet.Textc.Processors
 
         public Syntax[] Syntaxes { get; protected set; }
 
-        public abstract Task ProcessAsync(Expression expression);
+        public abstract Task ProcessAsync(Expression expression, CancellationToken cancellationToken);
     }
 }

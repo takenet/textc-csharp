@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Threading;
+using System.Threading.Tasks;
 
 namespace Takenet.Textc.Processors
 {
@@ -8,11 +9,6 @@ namespace Takenet.Textc.Processors
     public interface ICommandProcessor
     {
         /// <summary>
-        /// Gets the associated <see cref="IOutputProcessor" /> instance.
-        /// </summary>
-        IOutputProcessor OutputProcessor { get; }
-
-        /// <summary>
         /// Gets the processor associated syntaxes.
         /// </summary>
         Syntax[] Syntaxes { get; }
@@ -21,7 +17,14 @@ namespace Takenet.Textc.Processors
         /// Processes an expression.
         /// </summary>
         /// <param name="expression"></param>
+        /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns></returns>
-        Task ProcessAsync(Expression expression);
+        Task ProcessAsync(Expression expression, CancellationToken cancellationToken);
+
+        /// <summary>
+        /// Gets the associated <see cref="IOutputProcessor" /> instance.
+        /// This value can be null.
+        /// </summary>
+        IOutputProcessor OutputProcessor { get; }
     }
 }

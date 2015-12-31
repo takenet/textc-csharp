@@ -61,11 +61,9 @@ namespace Takenet.Textc.Types
             }
 
             var objTokenValue = context.GetVariable(variableName);
-
             if (objTokenValue != null)
             {
                 var tokenValue = (T) objTokenValue;
-
                 var validValues = GetValidValues(context);
 
                 if (validValues != null)

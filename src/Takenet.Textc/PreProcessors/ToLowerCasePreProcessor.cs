@@ -1,20 +1,21 @@
-﻿using System.Threading.Tasks;
+﻿using System.Threading;
+using System.Threading.Tasks;
 
 namespace Takenet.Textc.PreProcessors
 {
-    public class ToLowerCasePreProcessor : ITextPreProcessor
+    public class ToLowerCasePreprocessor : ITextPreprocessor
     {
-        public ToLowerCasePreProcessor()
+        public ToLowerCasePreprocessor()
             : this(0)
         {
         }
 
-        public ToLowerCasePreProcessor(int priority)
+        public ToLowerCasePreprocessor(int priority)
         {
             Priority = priority;
         }
 
-        public Task<string> ProcessTextAsync(string text, IRequestContext context)
+        public Task<string> ProcessTextAsync(string text, IRequestContext context, CancellationToken cancellationToken)
         {
             return Task.FromResult(text.ToLowerInvariant());
         }

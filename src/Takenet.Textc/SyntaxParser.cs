@@ -3,7 +3,7 @@
     /// <summary>
     /// The default syntax parser implementation.
     /// </summary>
-    public class SyntaxParser : ISyntaxParser
+    public sealed class SyntaxParser : ISyntaxParser
     {
         public bool TryParse(ITextCursor textCursor, Syntax syntax, IRequestContext context, out Expression expression)
         {

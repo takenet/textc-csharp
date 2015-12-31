@@ -2,30 +2,31 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Takenet.Textc.PreProcessors
 {
-    public class SpellCorrectPreProcessor : ITextPreProcessor
+    public class SpellCorrectPreprocessor : ITextPreprocessor
     {
         private static SpellCorrect _spellCorrect;
 
-        public SpellCorrectPreProcessor(Uri sampleDataFilePath)
+        public SpellCorrectPreprocessor(Uri sampleDataFilePath)
             : this(File.ReadAllText(sampleDataFilePath.LocalPath), 0)
         {
         }
 
-        public SpellCorrectPreProcessor(Uri sampleDataFilePath, int priority)
+        public SpellCorrectPreprocessor(Uri sampleDataFilePath, int priority)
             : this(File.ReadAllText(sampleDataFilePath.LocalPath), priority)
         {
         }
 
-        public SpellCorrectPreProcessor(string sampleData)
+        public SpellCorrectPreprocessor(string sampleData)
             : this(sampleData, 0)
         {
         }
 
-        public SpellCorrectPreProcessor(string sampleData, int priority)
+        public SpellCorrectPreprocessor(string sampleData, int priority)
         {
             var corpus = new Corpus(sampleData);
             _spellCorrect = new SpellCorrect(corpus);
@@ -33,12 +34,12 @@ namespace Takenet.Textc.PreProcessors
             Priority = priority;
         }
 
-        public SpellCorrectPreProcessor(IEnumerable<string> sampleData)
+        public SpellCorrectPreprocessor(IEnumerable<string> sampleData)
             : this(sampleData, 0)
         {
         }
 
-        public SpellCorrectPreProcessor(IEnumerable<string> sampleData, int priority)
+        public SpellCorrectPreprocessor(IEnumerable<string> sampleData, int priority)
         {
             var corpus = new Corpus(sampleData);
             _spellCorrect = new SpellCorrect(corpus);
@@ -46,7 +47,7 @@ namespace Takenet.Textc.PreProcessors
             Priority = priority;
         }
 
-        public Task<string> ProcessTextAsync(string text, IRequestContext context)
+        public Task<string> ProcessTextAsync(string text, IRequestContext context, CancellationToken cancellationToken)
         {
             var words = text.Split(' ');
 

@@ -225,10 +225,10 @@ var divideCommandProcessor = new DelegateCommandProcessor(
 
 // Finally, create the text processor and register all command processors
 var textProcessor = new TextProcessor();
-textProcessor.AddCommandProcessor(sumCommandProcessor);
-textProcessor.AddCommandProcessor(subtractCommandProcessor);
-textProcessor.AddCommandProcessor(multiplyCommandProcessor);
-textProcessor.AddCommandProcessor(divideCommandProcessor);
+textProcessor.CommandProcessors.Add(sumCommandProcessor);
+textProcessor.CommandProcessors.Add(subtractCommandProcessor);
+textProcessor.CommandProcessors.Add(multiplyCommandProcessor);
+textProcessor.CommandProcessors.Add(divideCommandProcessor);
 
 ```
 
@@ -285,8 +285,7 @@ There's no match for the specified input
 Creating the text processor:
 
 ```csharp
-
-// The calendar syntaxes, using some LDWords for input flexibility
+// 1. Define the calendar syntaxes, using some LDWords for input flexibility
 var addReminderSyntax = CsdlParser.Parse(
     "^[:Word?(hey,ok) :LDWord?(calendar,agenda) :Word?(add,new,create) command:LDWord(remind,reminder) :Word?(me) :Word~(to,of) message:Text :Word?(for) when:LDWord?(today,tomorrow,someday)]");
 var partialAddReminderSyntax = CsdlParser.Parse(
@@ -294,7 +293,7 @@ var partialAddReminderSyntax = CsdlParser.Parse(
 var getRemindersSyntax = CsdlParser.Parse(
     "[when:LDWord?(today,tomorrow,someday) :LDWord(reminders)]");
             
-// The output processors
+// 2. Now the output processors
 var addReminderOutputProcessor = new DelegateOutputProcessor<Reminder>((reminder, context) =>
 {
     Console.WriteLine($"Reminder '{reminder.Message}' added successfully for '{reminder.When}'");
@@ -318,10 +317,10 @@ var getRemindersOutputProcessor = new DelegateOutputProcessor<IEnumerable<Remind
     }
 });
     
-// Creating a instance to be shared by all processors
+// 3. Create a instance of the processor object to be shared by all processors
 var calendar = new Calendar();
 
-// The command processors
+// 4. Create the command processors
 var addRemiderCommandProcessor = new ReflectionCommandProcessor(
     calendar,
     nameof(AddReminderAsync),
@@ -345,15 +344,17 @@ var getRemidersCommandProcessor = new ReflectionCommandProcessor(
     getRemindersSyntax);
 
 
-// Registering the processors
+// 5. Register the the processors
 var textProcessor = new TextProcessor();
-textProcessor.AddCommandProcessor(addRemiderCommandProcessor);
-textProcessor.AddCommandProcessor(partialAddRemiderCommandProcessor);            
-textProcessor.AddCommandProcessor(getRemidersCommandProcessor);
+textProcessor.CommandProcessors.Add(addRemiderCommandProcessor);
+textProcessor.CommandProcessors.Add(partialAddRemiderCommandProcessor);            
+textProcessor.CommandProcessors.Add(getRemidersCommandProcessor);
 
-// Adding some pre-processors to normalize the input text
-textProcessor.AddTextPreProcessor(new TextNormalizerPreProcessor());
-textProcessor.AddTextPreProcessor(new ToLowerCasePreProcessor());
+// 6. Add some preprocessors to normalize the input text
+textProcessor.TextPreprocessors.Add(new TextNormalizerPreprocessor());
+textProcessor.TextPreprocessors.Add(new ToLowerCasePreprocessor());
+
+return textProcessor;
 
 ```
 

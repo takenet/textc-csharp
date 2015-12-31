@@ -2,6 +2,7 @@
 using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
+using System.Threading;
 using Takenet.Textc.Types;
 
 namespace Takenet.Textc.Processors
@@ -23,7 +24,7 @@ namespace Takenet.Textc.Processors
         {
             baseType = null;
 
-            while (toCheck != null && toCheck != typeof (object))
+            while (toCheck != null && toCheck != typeof(object))
             {
                 var cur = toCheck.IsGenericType ? toCheck.GetGenericTypeDefinition() : toCheck;
                 if (generic == cur)
@@ -37,40 +38,43 @@ namespace Takenet.Textc.Processors
             return false;
         }
 
-        public static object[] GetParametersFromExpression(Expression expression, ParameterInfo[] methodParameters,
-            bool allowNullOnNullableParameters)
+        public static object[] GetParametersFromExpression(Expression expression, ParameterInfo[] methodParameters, bool allowNullOnNullableParameters, 
+            CancellationToken cancellationToken)
         {
             var parameterArray = new object[methodParameters.Length];
 
             for (var i = 0; i < methodParameters.Length; i++)
             {
                 var methodParameter = methodParameters[i];
-
-                var parameterToken = expression.Tokens.FirstOrDefault(t => t != null &&
-                                                                           t.Type.Name == methodParameter.Name);
+                var parameterToken = expression
+                    .Tokens
+                    .FirstOrDefault(t => t != null && t.Type.Name == methodParameter.Name);
 
                 if (parameterToken != null)
                 {
                     parameterArray[i] = parameterToken.Value;
                 }
-                else if (methodParameter.ParameterType == typeof (IRequestContext))
+                else if (methodParameter.ParameterType == typeof(IRequestContext))
                 {
                     parameterArray[i] = expression.Context;
                 }
-                else if (methodParameter.ParameterType == typeof (Expression))
+                else if (methodParameter.ParameterType == typeof(Expression))
                 {
                     parameterArray[i] = expression;
                 }
+                else if (methodParameter.ParameterType == typeof(CancellationToken))
+                {
+                    parameterArray[i] = cancellationToken;
+                }
                 else if (allowNullOnNullableParameters && IsNullable(methodParameter.ParameterType))
                 {
-                    // O parâmetro aceita de forma explicita o valor nulo
+                    // The argument accepts null value
                     parameterArray[i] = null;
                 }
                 else
                 {
-                    throw new Exception(
-                        string.Format("Could not find a token for mandatory parameter '{0}' on expression",
-                            methodParameter.Name));
+                    throw new ArgumentException(
+                        $"Could not find a token for mandatory parameter '{methodParameter.Name}' on expression");
                 }
             }
             return parameterArray;
@@ -80,7 +84,7 @@ namespace Takenet.Textc.Processors
         {
             foreach (var syntax in syntaxes)
             {
-                // Checa se a sintaxe cobre todos os parametros da ação
+                // Checks if the syntax cover all method arguments
                 foreach (var methodParameter in methodParameters)
                 {
                     var tokenType = syntax.TokenTypes.FirstOrDefault(t => t.Name == methodParameter.Name);
@@ -89,9 +93,9 @@ namespace Takenet.Textc.Processors
                     {
                         var tokenTypeType = tokenType.GetType();
 
-                        Type genericTokenType = null;
+                        Type genericTokenType;
 
-                        // Verifica se o tipo do parâmetro é compatível
+                        // Check if the parameter type is compatible
                         if (TryGetGenericTokenTypeParameterType(tokenTypeType, out genericTokenType))
                         {
                             if (genericTokenType != methodParameter.ParameterType)
@@ -100,27 +104,24 @@ namespace Takenet.Textc.Processors
                                 Type baseType;
 
                                 if (
-                                    !(IsSubclassOfRawGeneric(typeof (Nullable<>), methodParameter.ParameterType,
+                                    !(IsSubclassOfRawGeneric(typeof(Nullable<>), methodParameter.ParameterType,
                                         out baseType) &&
                                       tokenType.IsOptional &&
                                       methodParameter.ParameterType.GetGenericArguments().FirstOrDefault() ==
                                       genericTokenType))
                                 {
                                     throw new ArgumentException(
-                                        string.Format(
-                                            "Method parameter '{0}' type is incorrect in one or more syntaxes. Expected type is '{1}' and actual '{2}'.",
-                                            methodParameter.Name, methodParameter.ParameterType.Name,
-                                            genericTokenType.Name));
+                                        $"Method parameter '{methodParameter.Name}' type is incorrect in one or more syntaxes. Expected type is '{methodParameter.ParameterType.Name}' and actual '{genericTokenType.Name}'.");
                                 }
                             }
                         }
                     }
-                    else if (methodParameter.ParameterType != typeof (IRequestContext) &&
-                             methodParameter.ParameterType != typeof (Expression))
+                    else if (methodParameter.ParameterType != typeof(IRequestContext) &&
+                             methodParameter.ParameterType != typeof(Expression) &&
+                             methodParameter.ParameterType != typeof(CancellationToken))
                     {
                         throw new ArgumentException(
-                            string.Format("Method parameter '{0}' is not covered by one or more syntaxes",
-                                methodParameter.Name));
+                            $"Method parameter '{methodParameter.Name}' is not covered by one or more syntaxes");
                     }
                 }
             }
@@ -131,9 +132,8 @@ namespace Takenet.Textc.Processors
             var result = false;
             genericParameterType = null;
 
-            Type baseType = null;
-
-            if (IsSubclassOfRawGeneric(typeof (TokenType<>), tokenTypeType, out baseType))
+            Type baseType;
+            if (IsSubclassOfRawGeneric(typeof(TokenType<>), tokenTypeType, out baseType))
             {
                 genericParameterType = baseType.GetGenericArguments().First();
                 result = true;
@@ -151,7 +151,6 @@ namespace Takenet.Textc.Processors
 
         public static bool TryConvert(object value, Type conversionType, out object convertedValue)
         {
-            // TODO: Move this to TypeUtil on SmartText
             try
             {
                 try
@@ -173,7 +172,7 @@ namespace Takenet.Textc.Processors
                     catch (InvalidCastException)
                     {
                         Type baseType;
-                        if (IsSubclassOfRawGeneric(typeof (Nullable<>), conversionType, out baseType))
+                        if (IsSubclassOfRawGeneric(typeof(Nullable<>), conversionType, out baseType))
                         {
                             var actualConversionType = conversionType.GetGenericArguments().FirstOrDefault();
                             if (actualConversionType != null &&

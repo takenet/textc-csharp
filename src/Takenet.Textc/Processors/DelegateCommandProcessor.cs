@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Reflection;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Takenet.Textc.Processors
@@ -48,12 +49,13 @@ namespace Takenet.Textc.Processors
 
         public IOutputProcessor OutputProcessor { get; }
 
-        public Task ProcessAsync(Expression expression)
+        public Task ProcessAsync(Expression expression, CancellationToken cancellationToken)
         {
             var parameterArray = TypeUtil.GetParametersFromExpression(
                 expression,
                 _actionParameters,
-                _allowNullOnNullableParameters);
+                _allowNullOnNullableParameters,
+                cancellationToken);
 
             Task commandOutputTask;
 
