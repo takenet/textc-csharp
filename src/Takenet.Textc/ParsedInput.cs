@@ -56,8 +56,9 @@ namespace Takenet.Textc
 
                 await Processor.OutputProcessor.ProcessOutputAsync(
                     commandOutput,
-                    Expression.Context)
-                    .ConfigureAwait(false);                
+                    Expression.Context,
+                    cancellationToken)
+                    .ConfigureAwait(false);
             }
         }
     }

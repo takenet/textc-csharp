@@ -64,7 +64,7 @@
             if (queryMatch &&
                 (!syntax.PerfectMatchOnly || string.IsNullOrEmpty(remainingText)))
             {
-                expression = new Expression(tokens, remainingText, syntax, context);
+                expression = new Expression(tokens, syntax, context, remainingText);
             }
             else
             {

@@ -16,10 +16,10 @@ namespace Takenet.Textc.Types
         public T[] ValidValues { get; internal set; }
 
         [TokenTypeProperty]
-        public string ContextVariableName { get; internal set; }
+        public string ValidValuesVariableName { get; internal set; }
 
         [TokenTypeProperty]
-        public string ValidValuesVariableName { get; internal set; }
+        public string ContextVariableName { get; internal set; }
 
         public override bool TryGetTokenFromInput(ITextCursor textCursor, out T token)
         {
@@ -33,7 +33,6 @@ namespace Takenet.Textc.Types
                 TryParseWord(word, out parsedWord))
             {
                 var validValues = GetValidValues(textCursor.Context);
-
                 if (validValues != null)
                 {
                     match = HasMatch(parsedWord, textCursor.Context, out token);
@@ -54,7 +53,6 @@ namespace Takenet.Textc.Types
             token = default(T);
 
             var variableName = Name;
-
             if (!string.IsNullOrWhiteSpace(ContextVariableName))
             {
                 variableName = ContextVariableName;
@@ -63,7 +61,7 @@ namespace Takenet.Textc.Types
             var objTokenValue = context.GetVariable(variableName);
             if (objTokenValue != null)
             {
-                var tokenValue = (T) objTokenValue;
+                var tokenValue = (T)objTokenValue;
                 var validValues = GetValidValues(context);
 
                 if (validValues != null)
@@ -84,7 +82,7 @@ namespace Takenet.Textc.Types
         {
             try
             {
-                value = (T) Convert.ChangeType(word, typeof (T));
+                value = (T)Convert.ChangeType(word, typeof(T));
                 return true;
             }
             catch

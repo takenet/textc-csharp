@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Threading;
+using System.Threading.Tasks;
 
 namespace Takenet.Textc.Processors
 {
@@ -10,9 +11,10 @@ namespace Takenet.Textc.Processors
         /// <summary>
         /// Processes the given command output.
         /// </summary>
-        /// <param name="output"></param>
-        /// <param name="context"></param>
+        /// <param name="output">The output object.</param>
+        /// <param name="context">The request context.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns></returns>
-        Task ProcessOutputAsync(object output, IRequestContext context);
+        Task ProcessOutputAsync(object output, IRequestContext context, CancellationToken cancellationToken);
     }
 }
