@@ -18,12 +18,15 @@ namespace Takenet.Textc
         private readonly List<ICommandProcessor> _commandProcessors;
         private readonly List<ITextPreprocessor> _textPreprocessors;
 
+        private readonly SynchronizationToken _synchronizationToken;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="TextProcessor" /> class.
         /// </summary>
         public TextProcessor()
             : this(new SyntaxParser(), new ExpressionScorer())
         {
+            
         }
 
         /// <summary>
@@ -39,11 +42,15 @@ namespace Takenet.Textc
 
             _commandProcessors = new List<ICommandProcessor>();
             _textPreprocessors = new List<ITextPreprocessor>();
+
+            _synchronizationToken = new SynchronizationToken();
+            CommandProcessors = new SynchronizedCollectionWrapper<ICommandProcessor>(_commandProcessors, _synchronizationToken);
+            TextPreprocessors = new SynchronizedCollectionWrapper<ITextPreprocessor>(_textPreprocessors, _synchronizationToken);
         }
 
-        public ICollection<ICommandProcessor> CommandProcessors => _commandProcessors;
+        public ICollection<ICommandProcessor> CommandProcessors { get; }
 
-        public ICollection<ITextPreprocessor> TextPreprocessors => _textPreprocessors;
+        public ICollection<ITextPreprocessor> TextPreprocessors { get; }
 
         protected ISyntaxParser SyntaxParser { get; }
 
@@ -58,45 +65,7 @@ namespace Takenet.Textc
             }
             if (context == null) throw new ArgumentNullException(nameof(context));
 
-            var processedInputText = inputText;
-
-            var textPreprocessors = new List<ITextPreprocessor>(TextPreprocessors).OrderBy(p => p.Priority);
-            foreach (var preprocessor in textPreprocessors)
-            {
-                cancellationToken.ThrowIfCancellationRequested();
-
-                processedInputText =
-                    await preprocessor.ProcessTextAsync(processedInputText, context, cancellationToken).ConfigureAwait(false);
-            }
-
-            var parsedInputs = new List<ParsedInput>();
-            var textCursor = new TextCursor(processedInputText, context);
-
-            // Makes a copy of the list
-            var commandProcessors = new List<ICommandProcessor>(_commandProcessors);
-            foreach (var commandProcessor in commandProcessors)
-            {
-                // Gets all the syntaxes that are of the same culture of the context or are culture invariant
-                var syntaxes =
-                    commandProcessor.Syntaxes.Where(
-                        s => s.Culture.Equals(context.Culture) || s.Culture.Equals(CultureInfo.InvariantCulture));
-
-                foreach (var syntax in syntaxes)
-                {
-                    cancellationToken.ThrowIfCancellationRequested();
-
-                    textCursor.RightToLeftParsing = syntax.RightToLeftParsing;
-                    textCursor.Reset();
-
-                    Expression expression;                    
-                    if (SyntaxParser.TryParse(textCursor, syntax, context, out expression))
-                    {
-                        var commandParsedQuery = new ParsedInput(expression, commandProcessor);
-                        parsedInputs.Add(commandParsedQuery);
-                        break;
-                    }
-                }
-            }
+            var parsedInputs = await ParseInput(inputText, context, cancellationToken);
 
             // Gets the more relevant expression accordingly to the expression scorer
             var parsedInput = parsedInputs
@@ -111,6 +80,56 @@ namespace Takenet.Textc
             else
             {
                 throw new MatchNotFoundException(inputText);
+            }
+        }
+
+        private async Task<List<ParsedInput>> ParseInput(string inputText, IRequestContext context, CancellationToken cancellationToken)
+        {
+            _synchronizationToken.Increment();
+            try
+            {
+                var parsedInputs = new List<ParsedInput>();
+                var processedInputText = inputText;
+                var textPreprocessors = _textPreprocessors.OrderBy(p => p.Priority);
+                foreach (var preprocessor in textPreprocessors)
+                {
+                    cancellationToken.ThrowIfCancellationRequested();
+                    processedInputText =
+                        await
+                            preprocessor.ProcessTextAsync(processedInputText, context, cancellationToken)
+                                .ConfigureAwait(false);
+                }
+
+                var textCursor = new TextCursor(processedInputText, context);
+
+                foreach (var commandProcessor in _commandProcessors)
+                {
+                    // Gets all the syntaxes that are of the same culture of the context or are culture invariant
+                    var syntaxes =
+                        commandProcessor.Syntaxes.Where(
+                            s => s.Culture.Equals(context.Culture) || s.Culture.Equals(CultureInfo.InvariantCulture));
+
+                    foreach (var syntax in syntaxes)
+                    {
+                        cancellationToken.ThrowIfCancellationRequested();
+
+                        textCursor.RightToLeftParsing = syntax.RightToLeftParsing;
+                        textCursor.Reset();
+
+                        Expression expression;
+                        if (SyntaxParser.TryParse(textCursor, syntax, context, out expression))
+                        {
+                            var commandParsedQuery = new ParsedInput(expression, commandProcessor);
+                            parsedInputs.Add(commandParsedQuery);
+                            break;
+                        }
+                    }
+                }
+                return parsedInputs;
+            }
+            finally
+            {
+                _synchronizationToken.Decrement();
             }
         }
     }

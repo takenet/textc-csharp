@@ -81,6 +81,7 @@
     <Compile Include="Scorers\ExpressionScorer.cs" />
     <Compile Include="Scorers\IExpressionScorer.cs" />
     <Compile Include="Scorers\MaxMatchesExpressionScorer.cs" />
+    <Compile Include="SynchronizedCollectionWrapper.cs" />
     <Compile Include="TextcException.cs" />
     <Compile Include="Syntax.cs" />
     <Compile Include="SyntaxParser.cs" />
