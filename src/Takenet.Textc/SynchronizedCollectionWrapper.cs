@@ -26,7 +26,7 @@ namespace Takenet.Textc
 
         IEnumerator IEnumerable.GetEnumerator()
         {
-            return ((IEnumerable) _underlyingCollection).GetEnumerator();
+            return ((IEnumerable)_underlyingCollection).GetEnumerator();
         }
 
         public void Add(T item)
@@ -76,9 +76,7 @@ namespace Takenet.Textc
         public readonly object SyncRoot;
         public int Counter { get; private set; }
 
-        public 
-            
-            SynchronizationToken()
+        public SynchronizationToken()
         {
             SyncRoot = new object();
         }
