@@ -1,7 +1,5 @@
 # Textc
 
-**Note: This is a work in progress and is subject to change without notice.**
-
 **Textc** is a natural language processing library that allows developers build text command based applications.
 
 ![TC](https://take-teamcity1.azurewebsites.net/app/rest/builds/buildType:(id:Textc_Master)/statusIcon)
