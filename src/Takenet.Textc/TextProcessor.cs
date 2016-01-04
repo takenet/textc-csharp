@@ -17,7 +17,6 @@ namespace Takenet.Textc
     {
         private readonly List<ICommandProcessor> _commandProcessors;
         private readonly List<ITextPreprocessor> _textPreprocessors;
-
         private readonly SynchronizationToken _synchronizationToken;
 
         /// <summary>
@@ -42,8 +41,8 @@ namespace Takenet.Textc
 
             _commandProcessors = new List<ICommandProcessor>();
             _textPreprocessors = new List<ITextPreprocessor>();
-
             _synchronizationToken = new SynchronizationToken();
+
             CommandProcessors = new SynchronizedCollectionWrapper<ICommandProcessor>(_commandProcessors, _synchronizationToken);
             TextPreprocessors = new SynchronizedCollectionWrapper<ITextPreprocessor>(_textPreprocessors, _synchronizationToken);
         }
@@ -66,21 +65,15 @@ namespace Takenet.Textc
             if (context == null) throw new ArgumentNullException(nameof(context));
 
             var parsedInputs = await ParseInput(inputText, context, cancellationToken);
+            if (!parsedInputs.Any()) throw new MatchNotFoundException(inputText);
 
             // Gets the more relevant expression accordingly to the expression scorer
             var parsedInput = parsedInputs
                 .OrderByDescending(e => ExpressionScorer.GetScore(e.Expression))
                 .ThenByDescending(e => e.Expression.Tokens.Count(t => t != null))
-                .FirstOrDefault();
+                .First();
 
-            if (parsedInput != null)
-            {
-                await parsedInput.SubmitAsync(cancellationToken).ConfigureAwait(false);
-            }
-            else
-            {
-                throw new MatchNotFoundException(inputText);
-            }
+            await parsedInput.SubmitAsync(cancellationToken).ConfigureAwait(false);
         }
 
         private async Task<List<ParsedInput>> ParseInput(string inputText, IRequestContext context, CancellationToken cancellationToken)
