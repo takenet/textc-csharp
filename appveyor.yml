@@ -6,6 +6,9 @@ before_build:
 - nuget restore src/Takenet.Textc.sln
 after_build:
 - nuget pack src/Takenet.Textc/Takenet.Textc.csproj -Symbols -Properties Configuration=Release -Properties Platform=AnyCPU
+branches:
+  only:
+    - master
 build:
   project: src/Takenet.Textc.sln
   verbosity: minimal
