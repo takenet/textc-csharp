@@ -1,0 +1,28 @@
+version: 0.2.{build}
+configuration: Release
+platform: Any CPU
+cache: src/packages
+before_build:
+- nuget restore src/Takenet.Textc.sln
+after_build:
+- nuget pack src/Takenet.Textc/Takenet.Textc.csproj -Symbols -Properties Configuration=Release -Properties Platform=AnyCPU
+build:
+  project: src/Takenet.Textc.sln
+  verbosity: minimal
+test:
+  categories:
+    except:
+      - suppressed
+assembly_info:
+  patch: true
+  file: src\Takenet.Textc\Properties\AssemblyInfo.cs
+  assembly_file_version: '{version}'
+  assembly_version: '{version}'
+  assembly_informational_version: '{version}'
+artifacts:
+  - path: Takenet.Textc.*.nupkg
+deploy:
+- provider: NuGet
+  api_key:
+    secure: 0huvVwDjQ/i7FNOrby1sd/KJ1NaSFNOmTh4uUuS/kp7K7W2O3sDdnEeeYz8MwAzb
+  skip_symbols: false

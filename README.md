@@ -2,7 +2,7 @@
 
 **Textc** is a natural language processing library that allows developers build text command based applications.
 
-![TC](https://take-teamcity1.azurewebsites.net/app/rest/builds/buildType:(id:Textc_Master)/statusIcon)
+[![Build status](https://ci.appveyor.com/api/projects/status/dd24q1u410h3nrct?svg=true)](https://ci.appveyor.com/project/Takenet/textc-csharp)
 
 <a href="https://www.nuget.org/packages/Takenet.Textc" rel="NuHet">![NuGet](https://img.shields.io/nuget/dt/Takenet.Textc.svg)</a>
 
