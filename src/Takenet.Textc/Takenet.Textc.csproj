@@ -78,10 +78,9 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RequestContext.cs" />
     <Compile Include="RequestContextExtensions.cs" />
-    <Compile Include="Scorers\ExpressionScorer.cs" />
+    <Compile Include="Scorers\RatioExpressionScorer.cs" />
     <Compile Include="Scorers\IExpressionScorer.cs" />
-    <Compile Include="Scorers\MaxMatchesExpressionScorer.cs" />
-    <Compile Include="SynchronizedCollectionWrapper.cs" />
+    <Compile Include="Scorers\MatchCountExpressionScorer.cs" />
     <Compile Include="TextcException.cs" />
     <Compile Include="Syntax.cs" />
     <Compile Include="SyntaxParser.cs" />

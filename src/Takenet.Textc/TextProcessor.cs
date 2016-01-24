@@ -15,17 +15,13 @@ namespace Takenet.Textc
     /// </summary>
     public class TextProcessor : ITextProcessor
     {
-        private readonly List<ICommandProcessor> _commandProcessors;
-        private readonly List<ITextPreprocessor> _textPreprocessors;
-        private readonly SynchronizationToken _synchronizationToken;
-
         /// <summary>
         /// Initializes a new instance of the <see cref="TextProcessor" /> class.
         /// </summary>
         public TextProcessor()
-            : this(new SyntaxParser(), new ExpressionScorer())
+            : this(new SyntaxParser(), new RatioExpressionScorer())
         {
-            
+
         }
 
         /// <summary>
@@ -36,15 +32,11 @@ namespace Takenet.Textc
             if (syntaxParser == null) throw new ArgumentNullException(nameof(syntaxParser));
             if (expressionScorer == null) throw new ArgumentNullException(nameof(expressionScorer));
 
-            SyntaxParser = syntaxParser;                        
+            SyntaxParser = syntaxParser;
             ExpressionScorer = expressionScorer;
 
-            _commandProcessors = new List<ICommandProcessor>();
-            _textPreprocessors = new List<ITextPreprocessor>();
-            _synchronizationToken = new SynchronizationToken();
-
-            CommandProcessors = new SynchronizedCollectionWrapper<ICommandProcessor>(_commandProcessors, _synchronizationToken);
-            TextPreprocessors = new SynchronizedCollectionWrapper<ITextPreprocessor>(_textPreprocessors, _synchronizationToken);
+            CommandProcessors = new List<ICommandProcessor>();
+            TextPreprocessors = new List<ITextPreprocessor>();
         }
 
         public ICollection<ICommandProcessor> CommandProcessors { get; }
@@ -57,7 +49,7 @@ namespace Takenet.Textc
 
         public async Task ProcessAsync(string inputText, IRequestContext context, CancellationToken cancellationToken)
         {
-            if (inputText == null) throw new ArgumentNullException(nameof(inputText));            
+            if (inputText == null) throw new ArgumentNullException(nameof(inputText));
             if (string.IsNullOrWhiteSpace(inputText))
             {
                 throw new ArgumentException("The input string must have a value", nameof(inputText));
@@ -78,52 +70,44 @@ namespace Takenet.Textc
 
         private async Task<List<ParsedInput>> ParseInput(string inputText, IRequestContext context, CancellationToken cancellationToken)
         {
-            _synchronizationToken.Increment();
-            try
+            var parsedInputs = new List<ParsedInput>();
+            var processedInputText = inputText;
+            var textPreprocessors = TextPreprocessors.ToList().OrderBy(p => p.Priority);
+            foreach (var preprocessor in textPreprocessors)
             {
-                var parsedInputs = new List<ParsedInput>();
-                var processedInputText = inputText;
-                var textPreprocessors = _textPreprocessors.OrderBy(p => p.Priority);
-                foreach (var preprocessor in textPreprocessors)
+                cancellationToken.ThrowIfCancellationRequested();
+                processedInputText =
+                    await
+                        preprocessor.ProcessTextAsync(processedInputText, context, cancellationToken)
+                            .ConfigureAwait(false);
+            }
+
+            var textCursor = new TextCursor(processedInputText, context);
+
+            foreach (var commandProcessor in CommandProcessors.ToList())
+            {
+                // Gets all the syntaxes that are of the same culture of the context or are culture invariant
+                var syntaxes =
+                    commandProcessor.Syntaxes.Where(
+                        s => s.Culture.Equals(context.Culture) || s.Culture.Equals(CultureInfo.InvariantCulture));
+
+                foreach (var syntax in syntaxes)
                 {
                     cancellationToken.ThrowIfCancellationRequested();
-                    processedInputText =
-                        await
-                            preprocessor.ProcessTextAsync(processedInputText, context, cancellationToken)
-                                .ConfigureAwait(false);
-                }
 
-                var textCursor = new TextCursor(processedInputText, context);
+                    textCursor.RightToLeftParsing = syntax.RightToLeftParsing;
+                    textCursor.Reset();
 
-                foreach (var commandProcessor in _commandProcessors)
-                {
-                    // Gets all the syntaxes that are of the same culture of the context or are culture invariant
-                    var syntaxes =
-                        commandProcessor.Syntaxes.Where(
-                            s => s.Culture.Equals(context.Culture) || s.Culture.Equals(CultureInfo.InvariantCulture));
-
-                    foreach (var syntax in syntaxes)
+                    Expression expression;
+                    if (SyntaxParser.TryParse(textCursor, syntax, context, out expression))
                     {
-                        cancellationToken.ThrowIfCancellationRequested();
-
-                        textCursor.RightToLeftParsing = syntax.RightToLeftParsing;
-                        textCursor.Reset();
-
-                        Expression expression;
-                        if (SyntaxParser.TryParse(textCursor, syntax, context, out expression))
-                        {
-                            var commandParsedQuery = new ParsedInput(expression, commandProcessor);
-                            parsedInputs.Add(commandParsedQuery);
-                            break;
-                        }
+                        var commandParsedQuery = new ParsedInput(expression, commandProcessor);
+                        parsedInputs.Add(commandParsedQuery);
+                        break;
                     }
                 }
-                return parsedInputs;
             }
-            finally
-            {
-                _synchronizationToken.Decrement();
-            }
+            return parsedInputs;
         }
     }
 }
