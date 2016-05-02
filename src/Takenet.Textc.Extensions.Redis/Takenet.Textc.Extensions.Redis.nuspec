@@ -1,0 +1,24 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
+  <metadata>
+    <id>Takenet.Textc.Extensions.Redis</id>
+    <version>$version$</version>
+    <title>Textc.Redis</title>
+    <authors>takenet</authors>
+    <owners>takenet</owners>
+    <projectUrl>http://github.com/takenet/textc-csharp</projectUrl>
+    <licenseUrl>https://raw.githubusercontent.com/takenet/textc-csharp/master/LICENSE</licenseUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>The Redis extension package adds the 'Redis Request Context', which allows request variables to be stored in a Redis instance database.</description>
+    <copyright>Copyright © 2016 Curupira S/A</copyright>
+    <tags>text command natural-language</tags>
+    <dependencies>
+      <dependency id="Takenet.Textc" version="0.2.9" />
+      <dependency id="Newtonsoft.Json" version="7.0.1" />
+    </dependencies>
+  </metadata>
+  <files>
+    <file src="bin\Release\Takenet.Textc.dll" target="lib\net451\Takenet.Textc.dll" />
+    <file src="bin\Release\Takenet.Textc.XML" target="lib\net451\Takenet.Textc.XML" />
+  </files>  
+</package>
