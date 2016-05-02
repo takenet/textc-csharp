@@ -19,7 +19,7 @@ test:
       - suppressed
 assembly_info:
   patch: true
-  file: src\Takenet.Textc\Properties\AssemblyInfo.cs
+  file: '**\AssemblyInfo.cs'
   assembly_file_version: '{version}'
   assembly_version: '{version}'
   assembly_informational_version: '{version}'
