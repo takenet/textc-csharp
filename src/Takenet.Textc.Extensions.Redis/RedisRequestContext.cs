@@ -13,9 +13,10 @@ namespace Takenet.Textc.Extensions.Redis
     /// <summary>
     /// Defines a context that uses redis to store variables.
     /// </summary>
-    public class RedisRequestContext : IRequestContext
+    public class RedisRequestContext : IRequestContext, IDisposable
     {
         private readonly IDatabase _db;
+        private ConnectionMultiplexer _redis;
 
         /// <summary>
         ///  Initializes a new instance of the Takenet.Textc.Extensions.Redis.RedisRequestContext class.
@@ -42,8 +43,7 @@ namespace Takenet.Textc.Extensions.Redis
             Endpoint = endpoint;
             Key = key;
 
-            var redis = ConnectionMultiplexer.Connect(endpoint);
-            _db = redis.GetDatabase(database);
+            _redis = ConnectionMultiplexer.Connect(endpoint);
         }
 
         public CultureInfo Culture { get; }
@@ -60,29 +60,39 @@ namespace Takenet.Textc.Extensions.Redis
         {
             if (name == null) throw new ArgumentNullException(nameof(name));
 
-            _db.HashSet($"user:{Key}", new HashEntry[] { new HashEntry(name, JsonConvert.SerializeObject(value)) });
-            _db.KeyExpire(name, ExpireTime);
-            Trace.TraceInformation($"Variable 'user:{Key}' succeeded");
+            var db = _redis.GetDatabase(Database);
+
+            db.HashSet($"user:{Key}", new HashEntry[] { new HashEntry(name, JsonConvert.SerializeObject(value)) });
+            db.KeyExpire(name, ExpireTime);
+            Trace.TraceInformation($"Set Variable 'user:{Key} {name}' succeeded");
         }
 
         public virtual object GetVariable(string name)
         {
             if (name == null) throw new ArgumentNullException(nameof(name));
 
-            Trace.TraceInformation($"Getting variable 'user:{Key}'");
-            var value = _db.HashGet($"user:{Key}", name);
+            var db = _redis.GetDatabase(Database);
+            Trace.TraceInformation($"Getting variable 'user:{Key} {name}'");
+            var value = db.HashGet($"user:{Key}", name);
             return JsonConvert.DeserializeObject(value);
         }
 
         public virtual void RemoveVariable(string name)
         {
             if (name == null) throw new ArgumentNullException(nameof(name));
-            _db.HashDelete($"user:{Key}", name, CommandFlags.FireAndForget);
+            var db = _redis.GetDatabase(Database);
+            db.HashDelete($"user:{Key}", name, CommandFlags.FireAndForget);
         }
 
         public void Clear()
         {
-            _db.KeyDelete($"user:{Key}");
+            var db = _redis.GetDatabase(Database);
+            db.KeyDelete($"user:{Key}");
+        }
+
+        public void Dispose()
+        {
+            _redis.Dispose();
         }
     }
 }
