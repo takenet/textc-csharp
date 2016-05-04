@@ -2,6 +2,7 @@
 using StackExchange.Redis;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Text;
@@ -38,11 +39,11 @@ namespace Takenet.Textc.Extensions.Redis
             Culture = culture;
             Database = database;
             ExpireTime = expireTime;
+            Endpoint = endpoint;
             Key = key;
 
             var redis = ConnectionMultiplexer.Connect(endpoint);
             _db = redis.GetDatabase(database);
-
         }
 
         public CultureInfo Culture { get; }
@@ -61,12 +62,14 @@ namespace Takenet.Textc.Extensions.Redis
 
             _db.HashSet($"user:{Key}", new HashEntry[] { new HashEntry(name, JsonConvert.SerializeObject(value)) });
             _db.KeyExpire(name, ExpireTime);
+            Trace.TraceInformation($"Variable 'user:{Key}' succeeded");
         }
 
         public virtual object GetVariable(string name)
         {
             if (name == null) throw new ArgumentNullException(nameof(name));
 
+            Trace.TraceInformation($"Getting variable 'user:{Key}'");
             var value = _db.HashGet($"user:{Key}", name);
             return JsonConvert.DeserializeObject(value);
         }
