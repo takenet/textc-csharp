@@ -1,4 +1,6 @@
-﻿namespace Takenet.Textc
+﻿using Newtonsoft.Json;
+
+namespace Takenet.Textc
 {
     public static class RequestContextExtensions
     {
@@ -13,7 +15,8 @@
         {
             try
             {
-                return (T)context.GetVariable(name);
+                var stringContent = JsonConvert.SerializeObject(context.GetVariable(name));
+                return JsonConvert.DeserializeObject<T>(stringContent);
             }
             catch
             {

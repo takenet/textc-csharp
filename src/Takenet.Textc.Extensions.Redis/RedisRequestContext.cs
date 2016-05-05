@@ -44,6 +44,7 @@ namespace Takenet.Textc.Extensions.Redis
             Key = key;
 
             _redis = ConnectionMultiplexer.Connect(endpoint);
+            _db = _redis.GetDatabase(Database);
         }
 
         public CultureInfo Culture { get; }
@@ -60,10 +61,8 @@ namespace Takenet.Textc.Extensions.Redis
         {
             if (name == null) throw new ArgumentNullException(nameof(name));
 
-            var db = _redis.GetDatabase(Database);
-
-            db.HashSet($"user:{Key}", new HashEntry[] { new HashEntry(name, JsonConvert.SerializeObject(value)) });
-            db.KeyExpire(name, ExpireTime);
+            _db.HashSet($"user:{Key}", new HashEntry[] { new HashEntry(name, JsonConvert.SerializeObject(value)) });
+            _db.KeyExpire(name, ExpireTime);
             Trace.TraceInformation($"Set Variable 'user:{Key} {name}' succeeded");
         }
 
@@ -71,23 +70,27 @@ namespace Takenet.Textc.Extensions.Redis
         {
             if (name == null) throw new ArgumentNullException(nameof(name));
 
-            var db = _redis.GetDatabase(Database);
             Trace.TraceInformation($"Getting variable 'user:{Key} {name}'");
-            var value = db.HashGet($"user:{Key}", name);
-            return JsonConvert.DeserializeObject(value);
+            RedisValue value = _db.HashGet($"user:{Key}", name);
+            if (value.HasValue)
+            {
+                return JsonConvert.DeserializeObject(value);
+            }
+            else
+            {
+                return null;
+            }
         }
 
         public virtual void RemoveVariable(string name)
         {
             if (name == null) throw new ArgumentNullException(nameof(name));
-            var db = _redis.GetDatabase(Database);
-            db.HashDelete($"user:{Key}", name, CommandFlags.FireAndForget);
+            _db.HashDelete($"user:{Key}", name, CommandFlags.FireAndForget);
         }
 
         public void Clear()
         {
-            var db = _redis.GetDatabase(Database);
-            db.KeyDelete($"user:{Key}");
+            _db.KeyDelete($"user:{Key}");
         }
 
         public void Dispose()
