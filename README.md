@@ -2,11 +2,7 @@
 
 **Textc** is a natural language processing library that allows developers build text command based applications.
 
-[![Build status](https://ci.appveyor.com/api/projects/status/dd24q1u410h3nrct?svg=true)](https://ci.appveyor.com/project/Takenet/textc-csharp)
-
-<a href="https://www.nuget.org/packages/Takenet.Textc" rel="NuHet">![NuGet](https://img.shields.io/nuget/dt/Takenet.Textc.svg)</a>
-
-<a href="https://www.nuget.org/packages/Takenet.Textc" rel="NuHet">![NuGet](https://img.shields.io/nuget/v/Takenet.Textc.svg)</a>
+[![Build status](https://ci.appveyor.com/api/projects/status/dd24q1u410h3nrct?svg=true)](https://ci.appveyor.com/project/Takenet/textc-csharp) <a href="https://www.nuget.org/packages/Takenet.Textc" rel="NuHet">![NuGet](https://img.shields.io/nuget/v/Takenet.Textc.svg)</a>
 
 
 ## How it works
@@ -43,6 +39,20 @@ So the car "variable" didn't needed to be in the conversation input.
 This is the same idea of the Textc context.
 
 It is possible to add something in the context by marking a syntax token as **contextual** or during the command processing.
+
+**Context using Redis** <a href="https://www.nuget.org/packages/Takenet.Textc.Extensions.Redis" rel="NuHet">![NuGet](https://img.shields.io/nuget/v/Takenet.Textc.svg)</a>
+
+To use Redis you must first install the extension package via NuGet.
+
+```
+Install-Package Takenet.Textc.Extensions.Redis
+```
+
+This package contains the class responsible for using Redis instead of in memory of the application. It is an implementation of IRequestContext interface.
+
+```csharp
+return new Textc.Extensions.Redis.RedisRequestContext({RedisEndpoint}, {RedisDatabase}, {RedisTimeout}, {key});
+```
 
 ### CSDL
 
