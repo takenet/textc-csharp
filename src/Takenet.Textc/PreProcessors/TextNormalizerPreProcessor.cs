@@ -6,17 +6,28 @@ using System.Threading.Tasks;
 
 namespace Takenet.Textc.PreProcessors
 {
+    /// <summary>
+    /// Remove double spaces, punctuation and special characters from the user input.
+    /// </summary>
+    /// <seealso cref="Takenet.Textc.PreProcessors.ITextPreprocessor" />
     public class TextNormalizerPreprocessor : ITextPreprocessor
     {
         private static readonly Regex SpecialCharsInNumberExpression = new Regex(@"((?<=\d)[^\w ]+(?=\d))", RegexOptions.Compiled);
         private static readonly Regex SpecialCharsExpression = new Regex(@"[^\w]+", RegexOptions.Compiled);
         private static readonly Regex MultipleSpacesExpression = new Regex(@"\s+", RegexOptions.Compiled);
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TextNormalizerPreprocessor"/> class.
+        /// </summary>
         public TextNormalizerPreprocessor()
             : this(0)
         {
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TextNormalizerPreprocessor"/> class.
+        /// </summary>
+        /// <param name="priority">The priority.</param>
         public TextNormalizerPreprocessor(int priority)
         {
             Priority = priority;

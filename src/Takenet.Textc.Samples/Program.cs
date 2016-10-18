@@ -26,14 +26,16 @@ namespace Takenet.Textc.Samples
             {
                 case "2":
                     Console.WriteLine("Starting the calendar...");
-                    textProcessor = Calendar.CreateTextProcessor();
+                    textProcessor = Calendar2.CreateTextProcessor();
                     break;
 
                 default:
                     Console.WriteLine("Starting the calculator...");
                     textProcessor = Calculator.CreateTextProcessor();
                     break;
-            }            
+            }
+
+            Console.Clear();
 
             // Creates an empty context
             var context = new RequestContext();
