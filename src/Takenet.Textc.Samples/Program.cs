@@ -21,12 +21,18 @@ namespace Takenet.Textc.Samples
             Console.WriteLine("Select the sample: ");
             Console.WriteLine("1. Calculator");
             Console.WriteLine("2. Calendar");
+            Console.WriteLine("3. Pizza");
 
             switch (Console.ReadLine()??"".Trim())
             {
                 case "2":
                     Console.WriteLine("Starting the calendar...");
                     textProcessor = Calendar2.CreateTextProcessor();
+                    break;
+
+                case "3":
+                    Console.WriteLine("Starting the pizza...");
+                    textProcessor = Pizza.CreateTextProcessor();
                     break;
 
                 default:
