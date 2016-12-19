@@ -22,9 +22,7 @@ namespace Takenet.Textc.Samples
                 Flavor = flavor,
                 Address = address
             };
-
-            var orderId = ++_globalOrderId;
-            _orderDictionary.Add(orderId, order);
+            var orderId = SaveOrder(order);
 
             var builder = new StringBuilder();
             builder.AppendLine("Seu pedido:");
@@ -40,19 +38,19 @@ namespace Takenet.Textc.Samples
 
         public Task<string> ProcessOrderAsync(long orderId, IRequestContext context)
         {
-            Order order;
-            if (!_orderDictionary.TryGetValue(orderId, out order))
+            var order = GetOrder(orderId);
+            if (order == null)
             {
-                return Task.FromResult("Ops, não encontrei seu pedido :(");
+                return Task.FromResult("Ops, não encontrei o pedido solicitado :(");
             }
-            _orderDictionary.Remove(orderId);
+            DeleteOrder(orderId);
 
             context.SetVariable("size", order.Size);
             context.SetVariable("flavor", order.Flavor);
             context.SetVariable("address", order.Address);
 
             context.RemoveVariable(nameof(orderId));
-
+            
             var builder = new StringBuilder();
             builder.AppendLine("Seu pedido foi realizado com sucesso!");
             builder.Append("Ah, salvamos suas preferências para os próximos pedidos :)");
@@ -61,16 +59,39 @@ namespace Takenet.Textc.Samples
 
         public Task<string> CancelOrderAsync(long orderId, IRequestContext context)
         {
-            _orderDictionary.Remove(orderId);
+            DeleteOrder(orderId);
             context.Clear();
             return Task.FromResult("O pedido foi cancelado e suas preferências removidas");
+        }
+
+        private long SaveOrder(Order order)
+        {
+            var orderId = ++_globalOrderId;
+            _orderDictionary.Add(orderId, order);
+            return orderId;
+        }
+
+        private Order GetOrder(long orderId)
+        {
+            Order order;
+            _orderDictionary.TryGetValue(orderId, out order);
+            return order;
+        }
+
+        private void DeleteOrder(long orderId)
+        {
+            _orderDictionary.Remove(orderId);
         }
 
         public static ITextProcessor CreateTextProcessor()
         {
             // The parsed syntaxes
-            var confirmOrderSyntax = CsdlParser.Parse(
-                ":Word?(quero,mande,solicito) :Word?(uma) :Word?(pizza) size:Word(pequena,media,grande,gigante) :Word?(sabor,de) flavor:Word(marguerita,pepperoni,calabreza) :Word?(para) :Word?(à,a,o) address:Text");
+            var confirmOrderSyntax1 = CsdlParser.Parse(
+                ":LDWord?(quero,mande,solicito) :Word?(uma) :Word?(pizza) :Word?(do,no) :LDWord?(tamanho) size:LDWord(pequena,media,média,grande,gigante) :Word?(sabor,de) flavor:LDWord(marguerita,pepperoni,calabreza) :Word?(para) :Word?(à,a,o) address:Text");
+
+            var confirmOrderSyntax2 = CsdlParser.Parse(
+                ":LDWord?(quero,mande,solicito) :Word?(uma) :Word?(pizza) :Word?(sabor,de) flavor:LDWord(marguerita,pepperoni,calabreza) :Word?(do,no) :LDWord?(tamanho) size:LDWord(pequena,media,média,grande,gigante) :Word?(para) :Word?(à,a,o) address:Text");
+            
             var processOrderSyntax = CsdlParser.Parse(
                 ":Word(sim) orderId:Long");
             var cancelOrderSyntax = CsdlParser.Parse(
@@ -86,7 +107,8 @@ namespace Takenet.Textc.Samples
                 nameof(ConfirmOrderAsync),
                 true,
                 addReminderOutputProcessor,
-                confirmOrderSyntax);
+                confirmOrderSyntax1,
+                confirmOrderSyntax2);
             var processOrderCommandProcessor2 = new ReflectionCommandProcessor(
                 pizza,
                 nameof(ProcessOrderAsync),
