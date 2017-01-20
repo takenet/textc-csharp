@@ -12,8 +12,10 @@ namespace Takenet.Textc.Types
         {
         }
 
+        [TokenTypeProperty(IsDefault = true)]
         public string[] ValidValues { get; internal set; }
 
+        [TokenTypeProperty]
         public string ContextVariableName { get; internal set; }
 
         public override bool TryGetTokenFromInput(ITextCursor textCursor, out string token)
@@ -28,57 +30,18 @@ namespace Takenet.Textc.Types
 
                 var queryText = string.Empty;
 
-                while (true)
+                while (string.IsNullOrEmpty(matchText) &&
+                       ValidValues.Any(v => v.Length >= queryText.Length))
                 {
-                    var tokenPeek = textCursor.Peek();
+                    var tokenPeek = textCursor.Next();
 
-                    if (string.IsNullOrWhiteSpace(tokenPeek))
-                    {
-                        break;
-                    }
+                    if (string.IsNullOrWhiteSpace(tokenPeek)) break;
 
-                    if (textCursor.RightToLeftParsing)
-                    {
-                        queryText = $"{tokenPeek} {queryText}";
-                    }
-                    else
-                    {
-                        queryText = $"{queryText} {tokenPeek}";
-                    }
+                    queryText = textCursor.RightToLeftParsing 
+                        ? $"{tokenPeek} {queryText}" 
+                        : $"{queryText} {tokenPeek}";
 
-                    queryText = queryText.Trim();
-
-                    string[] matchTexts;
-
-                    if (textCursor.RightToLeftParsing)
-                    {
-                        matchTexts = ValidValues
-                            .Where(t => t.EndsWith(queryText, StringComparison.InvariantCultureIgnoreCase))
-                            .OrderByDescending(t => t.Length)
-                            .ToArray();
-                    }
-                    else
-                    {
-                        matchTexts = ValidValues
-                            .Where(t => t.StartsWith(queryText, StringComparison.InvariantCultureIgnoreCase))
-                            .OrderByDescending(t => t.Length)
-                            .ToArray();
-                    }
-
-                    if (matchTexts.Length >= 1)
-                    {
-                        // Avança o cursor
-                        textCursor.Next();
-
-                        if (matchTexts.Any(t => t.Equals(queryText, StringComparison.InvariantCultureIgnoreCase)))
-                        {
-                            matchText = queryText;
-                        }
-                    }
-                    else
-                    {
-                        break;
-                    }
+                    matchText = TryGetMatchText(ValidValues, queryText.Trim());
                 }
 
                 if (!string.IsNullOrEmpty(matchText))
@@ -99,6 +62,16 @@ namespace Takenet.Textc.Types
             }
 
             return match;
+        }
+
+        protected virtual string TryGetMatchText(string[] matchTexts, string queryText)
+        {
+            string matchText = null;
+            if (matchTexts.Any(t => t.Equals(queryText, StringComparison.InvariantCultureIgnoreCase)))
+            {
+                matchText = queryText;
+            }
+            return matchText;
         }
 
         public override bool TryGetTokenFromContext(IRequestContext context, out string token)

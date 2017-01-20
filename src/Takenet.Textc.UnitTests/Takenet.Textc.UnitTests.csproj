@@ -56,7 +56,9 @@
     <Compile Include="RequestContextTests.cs" />
     <Compile Include="TextProcessorTests.cs" />
     <Compile Include="Types\DoubleMetaphoneWordTokenTypeTests.cs" />
+    <Compile Include="Types\LevenshteinDistanceTextTokenTypeTests.cs" />
     <Compile Include="Types\SoundexWordTokenTypeTests.cs" />
+    <Compile Include="Types\TextTokenTypeTests.cs" />
     <Compile Include="Types\TokenTypeTestsBase.cs" />
   </ItemGroup>
   <ItemGroup>

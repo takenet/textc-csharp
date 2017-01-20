@@ -88,6 +88,7 @@
     <Compile Include="Types\DecimalTokenType.cs" />
     <Compile Include="Types\IntegerTokenType.cs" />
     <Compile Include="Types\ITokenType.cs" />
+    <Compile Include="Types\LevenshteinDistanceTextTokenType.cs" />
     <Compile Include="Types\LevenshteinDistanceWordTokenType.cs" />
     <Compile Include="Types\DoubleMetaphoneWordTokenType.cs" />
     <Compile Include="Types\RegexLongTokenType.cs" />
@@ -95,6 +96,7 @@
     <Compile Include="Types\RegexTokenTypeBase.cs" />
     <Compile Include="Types\SoundexWordTokenType.cs" />
     <Compile Include="Types\RegexTextTokenType.cs" />
+    <Compile Include="Types\StringExtensions.cs" />
     <Compile Include="Types\TextTokenType.cs" />
     <Compile Include="Types\TokenType.cs" />
     <Compile Include="Types\ValueTokenTypeBase.cs" />
