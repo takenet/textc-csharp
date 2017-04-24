@@ -1,7 +1,9 @@
 using System;
 using System.Threading.Tasks;
 using Takenet.Textc.Csdl;
+using Takenet.Textc.PreProcessors;
 using Takenet.Textc.Processors;
+using Takenet.Textc.Splitters;
 
 namespace Takenet.Textc.Samples
 {
@@ -75,11 +77,13 @@ namespace Takenet.Textc.Samples
                 );
 
             // Finally, create the text processor and register all command processors
-            var textProcessor = new TextProcessor();
+            var textProcessor = new TextProcessor(new PunctuationTextSplitter());
             textProcessor.CommandProcessors.Add(sumCommandProcessor);
             textProcessor.CommandProcessors.Add(subtractCommandProcessor);
             textProcessor.CommandProcessors.Add(multiplyCommandProcessor);
             textProcessor.CommandProcessors.Add(divideCommandProcessor);
+
+            textProcessor.TextPreprocessors.Add(new TrimTextPreprocessor());
 
             return textProcessor;
         }

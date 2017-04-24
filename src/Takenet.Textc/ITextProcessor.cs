@@ -10,7 +10,7 @@ namespace Takenet.Textc
     /// Defines a text processor service that processes the user inputs based on the syntaxes defined in the command processors.
     /// </summary>
     public interface ITextProcessor
-    {
+    {        
         /// <summary>
         /// Gets the collection of registered command processors.
         /// </summary>

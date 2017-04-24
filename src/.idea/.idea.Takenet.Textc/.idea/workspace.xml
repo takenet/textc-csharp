@@ -233,6 +233,7 @@
   <component name="PropertiesComponent">
     <property name="SearchEverywhereHistoryKey" value="Unit&#9;ACTION&#9;ActivateUnitTestingToolWindow&#10;L&#9;null&#9;null&#10;Tests&#9;ACTION&#9;RiderUnitTestRunSolutionAction&#10;plugi&#9;ACTION&#9;WelcomeScreen.Plugins" />
     <property name="settings.editor.selected.configurable" value="vcs.Git" />
+    <property name="last_opened_file_path" value="D:/Temp/Take.Blip.Templates.Faq/Take.Blip.Templates.Faq.sln" />
   </component>
   <component name="RunManager" selected=".NET Project.Default">
     <configuration default="true" type="DotNetProject" factoryName=".NET Project">
@@ -276,7 +277,7 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1484915673236</updated>
-      <workItem from="1484915678242" duration="4659000" />
+      <workItem from="1484915678242" duration="5278000" />
     </task>
     <task id="LOCAL-00001" summary="Implementation of  LDText token type">
       <created>1484928873967</created>
@@ -289,7 +290,7 @@
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="4659000" />
+    <option name="totallyTimeSpent" value="5278000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">

@@ -27,14 +27,21 @@ namespace Takenet.Textc
         /// <summary>
         /// Initializes a new instance of the <see cref="TextProcessor" /> class.
         /// </summary>
-        public TextProcessor(ISyntaxParser syntaxParser, IExpressionScorer expressionScorer)
+        public TextProcessor(ITextSplitter textSplitter)
+            : this(new SyntaxParser(), new RatioExpressionScorer(), textSplitter)
         {
-            if (syntaxParser == null) throw new ArgumentNullException(nameof(syntaxParser));
-            if (expressionScorer == null) throw new ArgumentNullException(nameof(expressionScorer));
+            if (textSplitter == null)
+                throw new ArgumentNullException(nameof(textSplitter));
+        }
 
-            SyntaxParser = syntaxParser;
-            ExpressionScorer = expressionScorer;
-
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TextProcessor" /> class.
+        /// </summary>
+        public TextProcessor(ISyntaxParser syntaxParser, IExpressionScorer expressionScorer, ITextSplitter textSplitter = null)
+        {
+            SyntaxParser = syntaxParser ?? throw new ArgumentNullException(nameof(syntaxParser));
+            ExpressionScorer = expressionScorer ?? throw new ArgumentNullException(nameof(expressionScorer));
+            TextSplitter = textSplitter;
             CommandProcessors = new List<ICommandProcessor>();
             TextPreprocessors = new List<ITextPreprocessor>();
         }
@@ -42,6 +49,8 @@ namespace Takenet.Textc
         public ICollection<ICommandProcessor> CommandProcessors { get; }
 
         public ICollection<ITextPreprocessor> TextPreprocessors { get; }
+
+        protected ITextSplitter TextSplitter { get; }
 
         protected ISyntaxParser SyntaxParser { get; }
 
@@ -56,16 +65,25 @@ namespace Takenet.Textc
             }
             if (context == null) throw new ArgumentNullException(nameof(context));
 
-            var parsedInputs = await ParseInput(inputText, context, cancellationToken);
-            if (!parsedInputs.Any()) throw new MatchNotFoundException(inputText);
+            foreach (var splittedInputText in SplitInput(inputText))
+            {
+                var parsedInputs = await ParseInput(splittedInputText, context, cancellationToken);
+                if (!parsedInputs.Any()) throw new MatchNotFoundException(splittedInputText);
 
-            // Gets the more relevant expression accordingly to the expression scorer
-            var parsedInput = parsedInputs
-                .OrderByDescending(e => ExpressionScorer.GetScore(e.Expression))
-                .ThenByDescending(e => e.Expression.Tokens.Count(t => t != null))
-                .First();
+                // Gets the more relevant expression accordingly to the expression scorer
+                var parsedInput = parsedInputs
+                    .OrderByDescending(e => ExpressionScorer.GetScore(e.Expression))
+                    .ThenByDescending(e => e.Expression.Tokens.Count(t => t != null))
+                    .First();
 
-            await parsedInput.SubmitAsync(cancellationToken).ConfigureAwait(false);
+                await parsedInput.SubmitAsync(cancellationToken).ConfigureAwait(false);
+            }
+        }
+
+        private IEnumerable<string> SplitInput(string inputText)
+        {
+            if (TextSplitter != null) return TextSplitter.Split(inputText);
+            return new[] { inputText };
         }
 
         private async Task<List<ParsedInput>> ParseInput(string inputText, IRequestContext context, CancellationToken cancellationToken)

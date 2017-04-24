@@ -55,6 +55,7 @@
     <Compile Include="ISyntaxParser.cs" />
     <Compile Include="ITextCursor.cs" />
     <Compile Include="ITextProcessor.cs" />
+    <Compile Include="ITextSplitter.cs" />
     <Compile Include="MatchNotFoundException.cs" />
     <Compile Include="Metadata\TokenTypeAttribute.cs" />
     <Compile Include="Metadata\TokenTypeLibraryAttribute.cs" />
@@ -67,6 +68,7 @@
     <Compile Include="PreProcessors\SpellCorrectPreprocessor.cs" />
     <Compile Include="PreProcessors\TextNormalizerPreprocessor.cs" />
     <Compile Include="PreProcessors\ToLowerCasePreprocessor.cs" />
+    <Compile Include="PreProcessors\TrimTextPreprocessor.cs" />
     <Compile Include="Processors\CommandProcessorOutputBase.cs" />
     <Compile Include="Processors\DelegateCommandProcessor.cs" />
     <Compile Include="Processors\DelegateOutputProcessor.cs" />
@@ -82,6 +84,7 @@
     <Compile Include="Scorers\RatioExpressionScorer.cs" />
     <Compile Include="Scorers\IExpressionScorer.cs" />
     <Compile Include="Scorers\MatchCountExpressionScorer.cs" />
+    <Compile Include="Splitters\PunctuationTextSplitter.cs" />
     <Compile Include="TextcException.cs" />
     <Compile Include="Syntax.cs" />
     <Compile Include="SyntaxParser.cs" />

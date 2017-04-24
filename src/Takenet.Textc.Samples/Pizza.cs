@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Takenet.Textc.Csdl;
 using Takenet.Textc.PreProcessors;
 using Takenet.Textc.Processors;
+using Takenet.Textc.Splitters;
 
 namespace Takenet.Textc.Samples
 {
@@ -123,7 +124,7 @@ namespace Takenet.Textc.Samples
                 cancelOrderSyntax);
 
             // Register the the processor
-            var textProcessor = new TextProcessor();
+            var textProcessor = new TextProcessor(new PunctuationTextSplitter());
             textProcessor.CommandProcessors.Add(confirmOrderCommandProcessor);
             textProcessor.CommandProcessors.Add(processOrderCommandProcessor2);
             textProcessor.CommandProcessors.Add(cancelOrderCommandProcessor);
