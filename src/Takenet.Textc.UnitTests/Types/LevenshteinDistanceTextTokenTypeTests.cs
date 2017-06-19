@@ -29,7 +29,7 @@ namespace Takenet.Textc.UnitTests.Types
 
             // Assert
             Check.That(result).IsTrue();
-            Check.That(actual).Equals(approximateText);
+            Check.That(actual).Equals(text2);
         }
 
         [Test]

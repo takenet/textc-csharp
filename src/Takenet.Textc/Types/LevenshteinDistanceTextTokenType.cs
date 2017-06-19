@@ -16,14 +16,7 @@ namespace Takenet.Textc.Types
         [TokenTypeProperty]
         public int MaxDistance { get; internal set; }
 
-        protected override string TryGetMatchText(string[] matchTexts, string queryText)
-        {
-            string matchText = null;
-            if (matchTexts.Any(t => t.CalculateLevenshteinDistance(queryText) <= MaxDistance))
-            {
-                matchText = queryText;
-            }
-            return matchText;
-        }
+        protected override string TryGetMatchText(string[] matchTexts, string queryText) 
+            => Array.Find(matchTexts, t => t.CalculateLevenshteinDistance(queryText) <= MaxDistance);
     }
 }
