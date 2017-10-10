@@ -141,7 +141,7 @@ And you will have the value `olá mundo` assigned to the `text` token and the `e
 | Decimal  | A culture-invariant decimal number. |  `-1.123`,`0.1231`,`1.1`, `131.2` |
 | Integer  | A 32 bit number.                    |  `-1`,`0`,`1`, `300` |
 | Long     | A 64 bit number.                    |  `-1`,`0`,`1`, `292908889192986509` |
-| Word     | A text word. It consumes all the input until the next blank space character. You can limit the expected words in the token template initialization. | `Dog`, `cat`, `Banana`    |
+| Word     | A text word. It consumes all the input until the next blank space character. You can limit the expected words in the token template initialization.  Multiple words enclosed within single quotes will be recognized as a single word. | `Dog`, `cat`, `Banana`    |
 | Text     | A text with multiple words. Note that this token type will consume all remaining input, so it must be the last to be parsed in a syntax.              | `This is a sentence`      |
 
 

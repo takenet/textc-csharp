@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace Takenet.Textc
 {
@@ -25,7 +27,10 @@ namespace Takenet.Textc
         public TextCursor(string inputText, IRequestContext context)
         {
             if (inputText == null) throw new ArgumentNullException(nameof(inputText));
-            _tokens = inputText.Split(TOKEN_SEPARATOR);
+            _tokens = Regex.Matches(inputText, @"[\""].+?[\""]|[^ ]+")
+                .Cast<Match>()
+                .Select(m => m.Value.Replace("'",""))
+                .ToArray();
             Context = context;
             Reset();
         }
