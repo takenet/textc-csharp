@@ -6,11 +6,11 @@ namespace Takenet.Textc.UnitTests
     [TestFixture]
     public class TextProcessorTests
     {
-        [Test]
-        public async Task ProcessAsync_ValidInput_CallsCommandProcessor()
-        {
+        // [Test]
+        // public async Task ProcessAsync_ValidInput_CallsCommandProcessor()
+        // {
 
             
-        }
+        // }
     }
 }
