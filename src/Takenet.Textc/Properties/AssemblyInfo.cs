@@ -1,4 +1,4 @@
-﻿using System.Reflection;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using Takenet.Textc.Metadata;
@@ -12,7 +12,7 @@ using Takenet.Textc.Metadata;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("Takenet.Textc")]
-[assembly: AssemblyCopyright("Copyright ©  2015 Take.net")]
+[assembly: AssemblyCopyright("Copyright �  2015 Take.net")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
