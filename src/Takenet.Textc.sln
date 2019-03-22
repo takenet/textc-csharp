@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.26124.0
 MinimumVisualStudioVersion = 15.0.26124.0
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Taketen.Textc", "Takenet.Textc\Taketen.Textc.csproj", "{51980A45-2C3F-489F-9247-1ACE30F2C857}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Taketen.Textc", "Takenet.Textc\Takenet.Textc.csproj", "{51980A45-2C3F-489F-9247-1ACE30F2C857}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Takenet.Textc.Extensions.Redis", "Takenet.Textc.Extensions.Redis\Takenet.Textc.Extensions.Redis.csproj", "{CBEB762A-93FE-4190-B25C-69C3D2482109}"
 EndProject
