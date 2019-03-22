@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using NFluent;
 using NUnit.Framework;
-using Ploeh.AutoFixture;
+using AutoFixture;
 using Takenet.Textc.Types;
 
 namespace Takenet.Textc.UnitTests.Types

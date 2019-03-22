@@ -9,9 +9,9 @@ namespace Takenet.Textc.Samples
 {
     class Program
     {
-        static void Main(string[] args)
+        static async Task Main(string[] args)
         {
-            MainAsync(args).Wait();
+            await MainAsync(args);
         }
 
         static async Task MainAsync(string[] args)

@@ -18,10 +18,12 @@ namespace Takenet.Textc.Csdl
 
         static CsdlParser()
         {
-            var loadedAssemblies = AppDomain
-                .CurrentDomain
-                .GetAssemblies()
-                .Where(a => a.GetCustomAttributes(typeof (TokenTypeLibraryAttribute), false).Any());
+       
+            var loadedAssemblies = Assembly
+                                    .GetEntryAssembly()
+                                    .GetReferencedAssemblies()
+                                    .Select(Assembly.Load)
+                                    .Where(a => a.GetCustomAttributes(typeof (TokenTypeLibraryAttribute), false).Any());
 
             foreach (var assembly in loadedAssemblies)
             {
