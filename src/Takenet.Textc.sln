@@ -18,6 +18,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Takenet.Textc.Extensions.Redis", "Takenet.Textc.Extensions.Redis\Takenet.Textc.Extensions.Redis.csproj", "{6F398506-FC95-45E1-B9AD-1E4A205C33FA}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Axaprj.Textc.Tests", "Axaprj.Textc.Tests\Axaprj.Textc.Tests.csproj", "{E216A1B3-429D-45CF-893D-AA3D086000E7}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -40,8 +42,15 @@ Global
 		{6F398506-FC95-45E1-B9AD-1E4A205C33FA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6F398506-FC95-45E1-B9AD-1E4A205C33FA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6F398506-FC95-45E1-B9AD-1E4A205C33FA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E216A1B3-429D-45CF-893D-AA3D086000E7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E216A1B3-429D-45CF-893D-AA3D086000E7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E216A1B3-429D-45CF-893D-AA3D086000E7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E216A1B3-429D-45CF-893D-AA3D086000E7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {D5D81951-B8B6-47D2-962E-4808EB9A751F}
 	EndGlobalSection
 EndGlobal
