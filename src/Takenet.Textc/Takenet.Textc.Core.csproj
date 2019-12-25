@@ -4,6 +4,7 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <Product>Takenet.Textc</Product>
     <Copyright>Copyright ©  2015 Take.net</Copyright>
+    <RootNamespace>Takenet.Textc</RootNamespace>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
