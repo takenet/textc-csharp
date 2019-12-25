@@ -9,6 +9,10 @@
     <DefineConstants>TRACE;PORT2CORE</DefineConstants>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DefineConstants>TRACE;PORT2CORE</DefineConstants>
+  </PropertyGroup>
+
   <ItemGroup>
     <PackageReference Include="AutoFixture.NUnit3" Version="4.11.0" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.4.0" />
