@@ -6,10 +6,10 @@
     <title>Textc</title>
     <authors>takenet,axaprj</authors>
     <owners>takenet,andrebires</owners>
+    <license type="expression">	Apache-2.0</license>
     <projectUrl>https://github.com/Axaprj/textc-csharp/tree/port2core</projectUrl>
-    <licenseUrl>https://raw.githubusercontent.com/takenet/textc-csharp/master/LICENSE</licenseUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
-    <description>Text command parsing library (debug configuration)</description>
+    <description>Text command parsing library</description>
     <copyright>Copyright © 2015 Curupira S/A</copyright>
     <tags>text command natural-language</tags>
     <dependencies>
