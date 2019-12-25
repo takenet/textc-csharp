@@ -6,7 +6,10 @@ using Takenet.Textc.Metadata;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-
+#if PORT2CORE
+[assembly: TokenTypeLibrary]
+[assembly: InternalsVisibleTo("Takenet.Textc.UnitTests.Core")]
+#else
 [assembly: AssemblyTitle("Takenet.Textc")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
@@ -41,3 +44,4 @@ using Takenet.Textc.Metadata;
 [assembly: AssemblyFileVersion("1.0.0.0")]
 [assembly: TokenTypeLibrary]
 [assembly: InternalsVisibleTo("Takenet.Textc.UnitTests")]
+#endif

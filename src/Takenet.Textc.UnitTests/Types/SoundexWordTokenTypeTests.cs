@@ -5,7 +5,11 @@ using System.Text;
 using System.Threading.Tasks;
 using NFluent;
 using NUnit.Framework;
+#if PORT2CORE
+using AutoFixture;
+#else
 using Ploeh.AutoFixture;
+#endif
 using Takenet.Textc.Types;
 
 namespace Takenet.Textc.UnitTests.Types

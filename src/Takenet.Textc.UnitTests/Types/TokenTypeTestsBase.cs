@@ -3,7 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+#if PORT2CORE
+using AutoFixture;
+#else
 using Ploeh.AutoFixture;
+#endif
 using Takenet.Textc.Types;
 
 namespace Takenet.Textc.UnitTests.Types

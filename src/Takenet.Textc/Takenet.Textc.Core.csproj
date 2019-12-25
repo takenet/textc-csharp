@@ -1,0 +1,24 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <Product>Takenet.Textc</Product>
+    <Copyright>Copyright ©  2015 Take.net</Copyright>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DefineConstants>TRACE;PORT2CORE</DefineConstants>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="packages.config" />
+    <None Remove="Takenet.Textc.nuspec" />
+    <None Remove="Takenet.Textc.v2.ncrunchproject" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+  </ItemGroup>
+
+</Project>

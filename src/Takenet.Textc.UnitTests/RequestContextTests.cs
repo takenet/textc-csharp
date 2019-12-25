@@ -1,7 +1,12 @@
 ﻿using System;
 using NFluent;
 using NUnit.Framework;
+#if PORT2CORE
+using AutoFixture;
+#else
 using Ploeh.AutoFixture;
+#endif
+
 
 namespace Takenet.Textc.UnitTests
 {
