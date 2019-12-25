@@ -51,8 +51,13 @@ namespace Takenet.Textc
             if (Processor.OutputProcessor != null &&
                 task.GetType().IsGenericType)
             {
+#if PORT2CORE
+                var pi = task.GetType().GetProperty("Result");
+                object commandOutput = pi.GetValue(task);
+#else
                 dynamic dynamicTask = task;
                 object commandOutput = dynamicTask.Result;
+#endif
 
                 await Processor.OutputProcessor.ProcessOutputAsync(
                     commandOutput,
